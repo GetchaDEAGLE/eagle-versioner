@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/SpellingAssistant.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/SpellingAssistant.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// imports
+const path = require("path");
+const colors = require("ansi-colors");
+const nSpell = require("nspell");
+const FileSystemHelper = require("../components/FileSystemHelper");
+const Logger = require("../components/Logger");
+const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
+
+// non-changing variables used by class
+const REGULAR_WORD_REGEX = new RegExp(/\b[A-Za-z-']+\b/);
+const MAX_SPELLING_CORRECTION_CHAR_LENGTH = 255;
+
+/**
+ * Provides spelling-related functionality (e.g. spell checking, word suggestions, etc.).
+ */
+class SpellingAssistant {
+  /**
+   * Constructor to create local class variables.
+   */
+  constructor() {
+    let fileSystemHelper = new FileSystemHelper();
+    let dictionary = {};
+    let affName = "aff";
+    let dicName = "dic";
+    dictionary[affName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+        "index." + affName);
+    dictionary[dicName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+        "index." + dicName);
+    this.spellChecker = nSpell(dictionary);
+    this.spellChecker.personal(["changelog", "change-log", "config"].join("\n"));
+  }
+
+  /**
+   * Gets the regular word regex.
+   * @returns {RegExp} The regular word regex.
+   */
+  static get regularWordRegex() {
+    return REGULAR_WORD_REGEX;
+  }
+
+  /**
+   * Gets the maximum spelling correction character length.
+   * @returns {number} The maximum spelling correction character length.
+   */
+  static get maxSpellingCorrectionCharLength() {
+    return MAX_SPELLING_CORRECTION_CHAR_LENGTH;
+  }
+
+  /**
+   * Gets the misspelled words from the specified words.
+   * @param {Array} words The words to check for misspellings.
+   * @returns {Map&lt;number, string>} Map of spelling corrections.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  getMisspelledWords(words) {
+    let misspelledWords = new Map();
+
+    if (Array.isArray(words)) {
+      for (let i = 0; i &lt; words.length; i++) {
+        if (SpellingAssistant.regularWordRegex.test(words[i])) {
+          if (this.spellChecker.correct(words[i]) === false) {
+            Logger.publish({
+              loggingLevelTarget: Logger.Level.VERBOSE,
+              message: "The word " + colors.yellow("\"" + words[i] + "\"") + " is not correct.",
+              isLabelIncluded: true,
+              outputType: Logger.OutputType.INQUIRER
+            });
+            misspelledWords.set(i, words[i]);
+          } else {
+            Logger.publish({
+              loggingLevelTarget: Logger.Level.VERBOSE,
+              message: "The word " + colors.yellow("\"" + words[i] + "\"") + " is correct.",
+              isLabelIncluded: true,
+              outputType: Logger.OutputType.INQUIRER
+            });
+          }
+        } else if (words[i]) {
+          Logger.publish({
+            loggingLevelTarget: Logger.Level.VERBOSE,
+            message: "Skipped the analysis of " + colors.yellow("\"" + words[i] + "\"") + " since it contains a " +
+                "non-word character.",
+            isLabelIncluded: true,
+            outputType: Logger.OutputType.INQUIRER
+          });
+        }
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant getMisspelledWords function.");
+    }
+
+    return misspelledWords;
+  }
+
+  /**
+   * Highlights the misspellings in the supplied words.
+   * @param {Array} originalWords The original words array.
+   * @param {Map&lt;number, string>} misspelledWords The misspelled words map.
+   * @returns {string} The string with misspellings highlighted.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  highlightMisspellings(originalWords, misspelledWords) {
+    let msgWithHighlights = "";
+
+    if (Array.isArray(originalWords) &amp;&amp; misspelledWords instanceof Map &amp;&amp; misspelledWords.size > 0) {
+      for (let i = 0; i &lt; originalWords.length; i++) {
+        if (misspelledWords.get(i)) {
+          msgWithHighlights += colors.red(originalWords[i]);
+        } else {
+          msgWithHighlights += originalWords[i];
+        }
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant highlightMisspellings function.");
+    }
+
+    return msgWithHighlights;
+  }
+
+  /**
+   * Gets spelling suggestions for the supplied word.
+   * @param {string} word The word to get spelling suggestions for.
+   * @returns {Array} Array of suggested words.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  suggestCorrect(word) {
+    let suggestedWords = [];
+
+    if (typeof word === "string" &amp;&amp; word) {
+      suggestedWords = this.spellChecker.suggest(word);
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant suggestCorrect function.");
+    }
+
+    return suggestedWords;
+  }
+
+  /**
+   * Highlights the corrections in the supplied words.
+   * @param {Array} originalWords The original words array.
+   * @param {Map&lt;number, string>} correctedWords The corrected words map.
+   * @returns {string} The string with corrections highlighted.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  highlightCorrections(originalWords, correctedWords) {
+    let msgWithHighlights = "";
+
+    if (Array.isArray(originalWords) &amp;&amp; correctedWords instanceof Map &amp;&amp; correctedWords.size > 0) {
+      for (let i = 0; i &lt; originalWords.length; i++) {
+        if (correctedWords.get(i)) {
+          msgWithHighlights += colors.blue(correctedWords.get(i));
+        } else {
+          msgWithHighlights += originalWords[i];
+        }
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant highlightCorrections function.");
+    }
+
+    return msgWithHighlights;
+  }
+}
+
+module.exports = SpellingAssistant;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChangelogCreator.html">ChangelogCreator</a></li><li><a href="Enum.html">Enum</a></li><li><a href="FileSystemHelper.html">FileSystemHelper</a></li><li><a href="GitRunner.html">GitRunner</a></li><li><a href="Logger.html">Logger</a></li><li><a href="MenuCoordinator.html">MenuCoordinator</a></li><li><a href="OptionsManager.html">OptionsManager</a></li><li><a href="SpellingAssistant.html">SpellingAssistant</a></li><li><a href="ToolsValidator.html">ToolsValidator</a></li><li><a href="VersioningAgent.html">VersioningAgent</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Jan 20 2020 21:22:51 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

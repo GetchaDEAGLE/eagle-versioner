@@ -1,0 +1,12 @@
+.editorconfig
+.eslintignore
+.eslintrc.json
+.github
+.idea
+*.dat
+*.iml
+.vscode
+coverage
+documentation/jsdoc
+node_modules
+tests

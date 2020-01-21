@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Eagle Versioner" src="https://github.com/GetchaDEAGLE/eagle-versioner/blob/master/documentation/images/ev-logo.png" width="274pt" height="210pt" />
+  <img alt="Eagle Versioner" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-logo.png" width="274pt" height="210pt" />
 </p>
 
 ---
@@ -349,7 +349,7 @@ directly under the short commit message and can bee seen by reviewing the Git lo
    In addition, there will be another prompt asking whether to insert the **[ci-skip]** tag. Please
    [see this](#skipping-cicd-pipeline-job-trigger) for more information.
 
-   <img alt="EV Commit Menu" src="https://github.com/GetchaDEAGLE/eagle-versioner/blob/master/documentation/images/ev-commit-menu.png" />
+   <img alt="EV Commit Menu" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-commit-menu.png" />
    
 5. (optional) Calculate the initial development version by running `ev calculate`. The output received is **0.1.0-latest**.
 This command is generally used to get the version when the interactive mode of the `ev commit` command isn't possible. In

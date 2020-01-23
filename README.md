@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Eagle Versioner" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-logo.png" width="274pt" height="210pt" />
+  <img alt="Eagle Versioner" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-logo.png" width="296pt" height="256pt" />
 </p>
 
 ---
@@ -345,12 +345,12 @@ directly under the short commit message and can bee seen by reviewing the Git lo
    initial development version as it would other version types (e.g. regular development and production). Only specify
    a breaking change if it truly is and keep in mind indicating this is important information that can help other
    developers. More information on breaking changes can be [found here](#breaking-changes).
-   
+
    In addition, there will be another prompt asking whether to insert the **[ci-skip]** tag. Please
    [see this](#skipping-cicd-pipeline-job-trigger) for more information.
 
    <img alt="EV Commit Menu" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-commit-menu.png" />
-   
+
 5. (optional) Calculate the initial development version by running `ev calculate`. The output received is **0.1.0-latest**.
 This command is generally used to get the version when the interactive mode of the `ev commit` command isn't possible. In
 this case the output can be sent to the `ev commit --manual --change-type version_change --new-version 0.1.0-latest`
@@ -358,7 +358,7 @@ command.
 
    **Note:** Each additional commit (regardless of change type) won't bump the version until after a version change
    commit is made. This only applies to the initial development version.
-   
+
 6. Create a version change commit by running `ev commit` again and selecting version change. When prompted for the version,
 enter **0.1.0-latest**. The default value for the version should already be populated but can still be manually entered.
 The default value was derived using the same methods as the `ev calculate` command.
@@ -367,7 +367,7 @@ The default value was derived using the same methods as the `ev calculate` comma
     incremented higher if necessary for a particular use case without using the calculated version. However, the
     version cannot be changed to something lower than the last recorded production version found in the most recent
     production version change commit.
-    
+
     Also, if multiple branches are being independently versioned and contain version change commits of their own, upon
     merging back to the desired branch there may be multiple development version change commits with version numbers
     appearing out of order, albeit with a development version format - likely with different development appendages. This
@@ -375,11 +375,11 @@ The default value was derived using the same methods as the `ev calculate` comma
     version change commits are ignored. Because of this, it's possible to enter a development version that is higher than
     the last production version then another development version that is higher than the last production version, but
     lower than the last development version.
-    
+
     In addition, in order to create the version change commit, a file will need to be modified so the commit will go
     through. As a best practice, modifying the file that contains the version should be done prior to making a version
     change commit. In the case of Node.js, updating the version found in the **package.json** should suffice.
-    
+
 7. Perform additional development tasks. In this example, a bug was found that has just been fixed. With the files staged,
 run `ev commit` and select the bug fix change type and enter the relevant information.
 
@@ -389,7 +389,7 @@ run `ev commit` and select the bug fix change type and enter the relevant inform
     output will always increment the minor version by one. The only way to increment the minor version further is to
     perform a version change commit then an additional versionable commit. Keep in mind this only applies to the initial
     development version.
-    
+
 9. When ready to create a production release from the initial development version, ensure the latest applicable
 version change commit has been made (by selecting the **Version Change** type from the **ev commit** command). This can
 be done by modifying the file containing version information and then creating a version commit with the calculated
@@ -446,7 +446,7 @@ The point in the CICD pipeline that these commands run is up to the implementor.
    ideally by submitting a pull request. Therefore, when the pull request is accepted, assuming the build and tests pass,
    it will be detected that a push has occurred to the repository which will trigger the CICD pipeline. Once that occurs,
    specific logic can execute which increments the version, generates the changelog, and creates/pushes commits for both.
-   
+
    In this situation it is important to setup logic to avoid running another build with tests since all that has changed
    is the version and changelog. However, in cases where the version is heavily coupled to application logic, pull requests
    should be submitted. Then the CICD pipeline checks out the code from the pull request and merges it with the target,

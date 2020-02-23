@@ -90,6 +90,7 @@ check spelling (interactive mode only).
 * **Bug Fix (causes version change)** - It's fun squashing bugs.
 * **Changelog** - Updating the changelog for project visibility.
 * **Chore** - Generic chore that doesn't fall in another change type.
+* **Dependency** - Bumping dependencies or adding new ones.
 * **Doc** - Documentation to keep stakeholders happy.
 * **Feature (causes version change)** - Something new and shiny was added.
 * **Perf (causes version change)** - The application is performing way better now.
@@ -341,6 +342,8 @@ example, the feature change type is selected. Enter a short commit message which
 describes the change. If more details are needed, add them to the optional long commit message. This information will go
 directly under the short commit message and can bee seen by reviewing the Git log.
 
+   <img alt="EV Commit Menu" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-commit-menu.png" />
+
    **Note**: There will be a prompt for specifying whether the change is breaking. However, this will not affect the
    initial development version as it would other version types (e.g. regular development and production). Only specify
    a breaking change if it truly is and keep in mind indicating this is important information that can help other
@@ -348,8 +351,6 @@ directly under the short commit message and can bee seen by reviewing the Git lo
 
    In addition, there will be another prompt asking whether to insert the **[ci-skip]** tag. Please
    [see this](#skipping-cicd-pipeline-job-trigger) for more information.
-
-   <img alt="EV Commit Menu" src="https://raw.githubusercontent.com/GetchaDEAGLE/eagle-versioner/master/documentation/images/ev-commit-menu.png" />
 
 5. (optional) Calculate the initial development version by running `ev calculate`. The output received is **0.1.0-latest**.
 This command is generally used to get the version when the interactive mode of the `ev commit` command isn't possible. In

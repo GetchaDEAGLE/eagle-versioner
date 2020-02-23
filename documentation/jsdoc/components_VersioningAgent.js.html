@@ -331,9 +331,10 @@ class VersioningAgent {
         } else {
           isVersionable =
               (commitMessageHistory[i].includes(GitRunner.breakingChangeTag)
-              || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
-              || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
-              || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)));
+                  || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
+                  || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
+                  || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))
+                  || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)));
         }
       }
     } else {
@@ -410,6 +411,7 @@ class VersioningAgent {
             versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
             versionComponents[2] = "0";
           } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
+              || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))
               || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))) {
             versionComponents[2] = String(parseInt(versionComponents[2], 10) + 1);
           }
@@ -432,6 +434,8 @@ class VersioningAgent {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE);
           } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))) {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX);
+          } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))) {
+            currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY);
           } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))) {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF);
           }
@@ -447,10 +451,13 @@ class VersioningAgent {
             versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
             versionComponents[2] = "0";
           } else if ((currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX)
+              || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
               || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))
               &amp;&amp; ((i + 1 &lt;= filteredCommitMsgHistory.length - 1
                   &amp;&amp; (filteredCommitMsgHistory[i + 1].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
                       === false &amp;&amp; filteredCommitMsgHistory[i + 1].includes(
+                          GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
+                      ) === false &amp;&amp; filteredCommitMsgHistory[i + 1].includes(
                           GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)
                       ) === false)) || i === filteredCommitMsgHistory.length - 1)) {
             versionComponents[2] = String(parseInt(versionComponents[2], 10) + 1);
@@ -644,13 +651,13 @@ module.exports = VersioningAgent;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChangelogCreator.html">ChangelogCreator</a></li><li><a href="Enum.html">Enum</a></li><li><a href="FileSystemHelper.html">FileSystemHelper</a></li><li><a href="GitRunner.html">GitRunner</a></li><li><a href="Logger.html">Logger</a></li><li><a href="MenuCoordinator.html">MenuCoordinator</a></li><li><a href="OptionsManager.html">OptionsManager</a></li><li><a href="SpellingAssistant.html">SpellingAssistant</a></li><li><a href="ToolsValidator.html">ToolsValidator</a></li><li><a href="VersioningAgent.html">VersioningAgent</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChangelogCreator.html">ChangelogCreator</a></li><li><a href="Enum.html">Enum</a></li><li><a href="FileSystemHelper.html">FileSystemHelper</a></li><li><a href="FrozenObjectException.html">FrozenObjectException</a></li><li><a href="GitRunner.html">GitRunner</a></li><li><a href="IncompatibleToolException.html">IncompatibleToolException</a></li><li><a href="InvalidArgumentException.html">InvalidArgumentException</a></li><li><a href="InvalidGitDataException.html">InvalidGitDataException</a></li><li><a href="IOException.html">IOException</a></li><li><a href="Logger.html">Logger</a></li><li><a href="MenuCoordinator.html">MenuCoordinator</a></li><li><a href="MissingToolException.html">MissingToolException</a></li><li><a href="OptionsManager.html">OptionsManager</a></li><li><a href="ShellCmdFailureException.html">ShellCmdFailureException</a></li><li><a href="SpellingAssistant.html">SpellingAssistant</a></li><li><a href="ToolsValidator.html">ToolsValidator</a></li><li><a href="VersionFormattingException.html">VersionFormattingException</a></li><li><a href="VersioningAgent.html">VersioningAgent</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Jan 20 2020 21:22:51 GMT-0600 (Central Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Feb 22 2020 18:48:16 GMT-0600 (Central Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

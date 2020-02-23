@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: ToolsValidator</title>
+    <title>JSDoc: Class: IncompatibleToolException</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: ToolsValidator</h1>
+    <h1 class="page-title">Class: IncompatibleToolException</h1>
 
     
 
@@ -28,9 +28,11 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>ToolsValidator<span class="signature">(logOutputType)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>IncompatibleToolException<span class="signature">(message)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Provides functionality for validating the correct tools are installed.</div>
+            <div class="class-description">Incompatible tool exception used in methods when an incompatible tool (e.g. wrong version) is encountered.
+See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this</a>
+for more details.</div>
         
     
 </header>
@@ -45,12 +47,16 @@
     
 
     
-    <h4 class="name" id="ToolsValidator"><span class="type-signature"></span>new ToolsValidator<span class="signature">(logOutputType)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="IncompatibleToolException"><span class="type-signature"></span>new IncompatibleToolException<span class="signature">(message)</span><span class="type-signature"></span></h4>
     
 
     
 
 
+
+<div class="description">
+    Constructor to perform important class inheritance operations.
+</div>
 
 
 
@@ -75,6 +81,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -85,13 +93,13 @@
 
         <tr>
             
-                <td class="name"><code>logOutputType</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Symbol</span>
+<span class="param-type">string</span>
 
 
             
@@ -100,8 +108,14 @@
             
 
             
+                <td class="default">
+                
+                    Incompatible tool has been discovered.
+                
+                </td>
+            
 
-            <td class="description last">The output type to use when logging messages.</td>
+            <td class="description last">The message assigned to the exception.</td>
         </tr>
 
     
@@ -142,167 +156,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_ToolsValidator.js.html">components/ToolsValidator.js</a>, <a href="components_ToolsValidator.js.html#line20">line 20</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-<ul>
-        <li>
-
-    <div class="param-desc">
-    
-        IllegalArgumentException when an invalid argument is passed.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        IncompatibleToolException if incompatible version of Git is installed.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        InvalidGitDataException if the version of Git returned cannot be parsed.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        InvalidGitDataException if the current folder doesn't contain a valid Git repository.
-    
-    </div>
-
-</li>
-    
-        <li>
-
-    <div class="param-desc">
-    
-        MissingToolException if Git isn't installed.
-    
-    </div>
-
-</li>
-    </ul>
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="invoke"><span class="type-signature"></span>invoke<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Validates that the correct tools are installed.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_ToolsValidator.js.html">components/ToolsValidator.js</a>, <a href="components_ToolsValidator.js.html#line24">line 24</a>
+        <a href="exceptions_IncompatibleToolException.js.html">exceptions/IncompatibleToolException.js</a>, <a href="exceptions_IncompatibleToolException.js.html#line11">line 11</a>
     </li></ul></dd>
     
 
@@ -332,7 +186,23 @@
 
 
 
-        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     

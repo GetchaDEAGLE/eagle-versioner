@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: exceptions/VersionFormattingException.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,42 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: exceptions/VersionFormattingException.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Version formatting exception used in methods where version isn't in semantic form.
+ * See &lt;a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this&lt;/a>
+ * for more details.
+ */
+class VersionFormattingException extends Error {
+  /**
+   * Constructor to perform important class inheritance operations.
+   * @param {string} message The message assigned to the exception.
+   */
+  constructor(message = "Version is not in semantic format.") {
+    // call parent constructor
+    super();
 
+    // maintains the proper stack trace for where the error was thrown (only available on V8)
+    Error.captureStackTrace(this, this.constructor);
 
-    <h3> </h3>
+    // assign values to inherited local class variables
+    this.name = "VersionFormattingException";
+    this.message = message;
+  }
+}
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+module.exports = VersionFormattingException;
+</code></pre>
+        </article>
+    </section>
 
 
 

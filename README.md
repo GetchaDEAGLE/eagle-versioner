@@ -525,5 +525,5 @@ For blog posts and other interesting insights from the author, please visit [dan
 ## Copyright/License Notice
 
 Eagle Versioner and the Eagle Versioner logo are Ⓒ Copyright 2020 Daniel Eagle. All rights reserved. Distributed under
-the [MIT license](documentation/LICENSE). Please see [Third Party Notices](documentation/THIRD_PARTY_NOTICES.md) for
+the [MIT license](LICENSE). Please see [Third Party Notices](documentation/THIRD_PARTY_NOTICES.md) for
 information on other software dependencies included as a part of Eagle Versioner.

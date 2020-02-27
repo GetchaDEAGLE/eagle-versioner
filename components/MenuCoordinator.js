@@ -2,12 +2,15 @@
 /* eslint-disable no-await-in-loop */
 
 // imports
+const path = require("path");
 const colors = require("ansi-colors");
 const inquirer = require("inquirer");
+const FileSystemHelper = require("../components/FileSystemHelper");
 const GitRunner = require("../components/GitRunner");
 const Logger = require("../components/Logger");
 const SpellingAssistant = require("../components/SpellingAssistant");
 const VersioningAgent = require("../components/VersioningAgent");
+const OptionsManager = require("../components/OptionsManager");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 
 // non-changing variables used by class
@@ -232,7 +235,8 @@ class MenuCoordinator {
    */
   constructor() {
     try {
-      this.spellingAssistant = new SpellingAssistant();
+      this.spellingAssistant = new SpellingAssistant(path.join(FileSystemHelper.userHomeDirectory,
+          OptionsManager.settingsFolderName), OptionsManager.extraDictWordsFilename);
       this.prompt = inquirer.createPromptModule();
     } catch (error) {
       Logger.publish({
@@ -442,11 +446,17 @@ class MenuCoordinator {
           let result = await this.prompt(misspelledWordQuestions[i]);
 
           for (let [key, value] of Object.entries(result)) {
-            if (`${value}` === NOT_LISTED_SPELLING_CHOICE) {
+            if (`${value}` === MenuCoordinator.notListedSpellingChoice) {
               let additionalResult = await this.prompt([MenuCoordinator.customSpellingQuestion]);
               misspellingCorrections.set(parseInt(key, 10), additionalResult.customSpelling);
-            } else if (`${value}` === SKIP_SPELLING_CORRECTION_CHOICE) {
+              this.spellingAssistant.addWordToDictionary(path.join(FileSystemHelper.userHomeDirectory,
+                  OptionsManager.settingsFolderName), OptionsManager.extraDictWordsFilename,
+                  additionalResult.customSpelling);
+            } else if (`${value}` === MenuCoordinator.skipSpellingCorrectionChoice) {
               misspellingCorrections.set(parseInt(key, 10), originalWords[key]);
+              this.spellingAssistant.addWordToDictionary(path.join(FileSystemHelper.userHomeDirectory,
+                  OptionsManager.settingsFolderName), OptionsManager.extraDictWordsFilename,
+                  originalWords[key]);
             } else {
               misspellingCorrections.set(parseInt(key, 10), value);
             }

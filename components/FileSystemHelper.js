@@ -1,6 +1,7 @@
 // imports
 const fileSystem = require("fs-extra");
 const path = require("path");
+const os = require("os");
 const Logger = require("./Logger");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 
@@ -17,6 +18,14 @@ class FileSystemHelper {
    */
   static get maxFilePathAndFileNameCharLength() {
     return MAX_FILE_PATH_AND_FILENAME_CHAR_LENGTH;
+  }
+
+  /**
+   * Gets the user's home directory.
+   * @returns {string} The user's home directory.
+   */
+  static get userHomeDirectory() {
+    return os.homedir();
   }
 
   /**

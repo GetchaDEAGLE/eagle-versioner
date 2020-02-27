@@ -8,6 +8,10 @@ const VersioningAgent = require("../components/VersioningAgent");
 const ToolsValidator = require("../components/ToolsValidator");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 
+// non-changing variables used by class
+const SETTINGS_FOLDER_NAME = ".ev";
+const EXTRA_DICT_WORDS_FILENAME = "extra-dictionary-words.txt";
+
 /**
  * Provides functionality for setting and validating options.
  */
@@ -17,6 +21,22 @@ class OptionsManager {
    */
   constructor() {
     this.gitRunner = new GitRunner(Logger.OutputType.SHELL);
+  }
+
+  /**
+   * Returns the settings folder name.
+   * @returns {string} The name of the settings folder.
+   */
+  static get settingsFolderName() {
+    return SETTINGS_FOLDER_NAME;
+  }
+
+  /**
+   * Returns the extra dictionary words filename.
+   * @returns {string} The name of the extra dictionary words file.
+   */
+  static get extraDictWordsFilename() {
+    return EXTRA_DICT_WORDS_FILENAME;
   }
 
   /**

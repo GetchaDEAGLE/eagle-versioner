@@ -5,6 +5,7 @@ const Logger = require("../components/Logger");
 const GitRunner = require("../components/GitRunner");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 const VersionFormattingException = require("../exceptions/VersionFormattingException");
+const InvalidGitDataException = require("../exceptions/InvalidGitDataException");
 
 // non-changing variables used by class
 const STRATEGY_TYPE = new Enum("SEQUENTIAL", "COLLECTIVE");
@@ -160,30 +161,19 @@ class VersioningAgent {
     let isGreater = false;
 
     if (typeof versionA === "string" && versionA && typeof versionB === "string" && versionB) {
-      try {
-        let firstVersionComponents = this.extractVersionComponents(versionA);
-        let secondVersionComponents = this.extractVersionComponents(versionB);
-
-        isGreater = ((firstVersionComponents[0] > secondVersionComponents[0])
-            || (firstVersionComponents[0] === secondVersionComponents[0]
-                && firstVersionComponents[1] > secondVersionComponents[1])
-            || (firstVersionComponents[0] === secondVersionComponents[0]
-                && firstVersionComponents[1] === secondVersionComponents[1]
-                && firstVersionComponents[2] > secondVersionComponents[2])
-            || (firstVersionComponents[0] === secondVersionComponents[0]
-                && firstVersionComponents[1] === secondVersionComponents[1]
-                && firstVersionComponents[2] === secondVersionComponents[2]
-                && firstVersionComponents.length === 3
-                && secondVersionComponents.length === 4));
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
-      }
+      let firstVersionComponents = this.extractVersionComponents(versionA);
+      let secondVersionComponents = this.extractVersionComponents(versionB);
+      isGreater = ((firstVersionComponents[0] > secondVersionComponents[0])
+          || (firstVersionComponents[0] === secondVersionComponents[0]
+              && firstVersionComponents[1] > secondVersionComponents[1])
+          || (firstVersionComponents[0] === secondVersionComponents[0]
+              && firstVersionComponents[1] === secondVersionComponents[1]
+              && firstVersionComponents[2] > secondVersionComponents[2])
+          || (firstVersionComponents[0] === secondVersionComponents[0]
+              && firstVersionComponents[1] === secondVersionComponents[1]
+              && firstVersionComponents[2] === secondVersionComponents[2]
+              && firstVersionComponents.length === 3
+              && secondVersionComponents.length === 4));
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the VersioningAgent isGreater function.");
     }
@@ -490,6 +480,8 @@ class VersioningAgent {
    * @param {Symbol} devVersionAppendageType The type of dev version appendage to add after semantic version.
    * @param {string} productionBranchName The name of the production branch.
    * @throws IllegalArgumentException when an invalid argument is passed.
+   * @throws VersionFormattingException when the version found in the Initial Commit isn't valid.
+   * @throws InvalidGitDataException when missing the necessary commits needed to determine the version.
    */
   determine(lastProdVersionMap, strategyType, devVersionAppendageType,
             productionBranchName = GitRunner.defaultProductionBranchName) {
@@ -501,68 +493,51 @@ class VersioningAgent {
         && typeof productionBranchName === "string" && productionBranchName) {
       let currentBranchName = "";
       let lastProdVersion = "";
+      let gitRunner = new GitRunner(Logger.OutputType.SHELL);
+      currentBranchName = gitRunner.getCurrentBranchName();
+      let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
+      lastProdVersion = (lastProdVersionMap.size > 0) ? lastProdVersionMap.get(lastProdVersionCommitSha) : "";
+      let commitMessageHistory = gitRunner.getCommitMsgHistory(lastProdVersionCommitSha);
 
-      try {
-        let gitRunner = new GitRunner(Logger.OutputType.SHELL);
-        currentBranchName = gitRunner.getCurrentBranchName();
-        let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
-        lastProdVersion = (lastProdVersionMap.size > 0) ? lastProdVersionMap.get(lastProdVersionCommitSha) : "";
-        let commitMessageHistory = gitRunner.getCommitMsgHistory(lastProdVersionCommitSha);
-
-        if (this.containsVersionableCommits(commitMessageHistory)) {
-          if (lastProdVersion) {
-            determinedVersion = this.calculateRegular(strategyType, commitMessageHistory, lastProdVersion);
-          } else if (currentBranchName === productionBranchName) {
-            determinedVersion = VersioningAgent.startingProdVersion;
-          } else {
-            let initialDevVersionChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
-            commitMessageHistory = (initialDevVersionChangeCommitShas.length > 0)
-                ? gitRunner.getCommitMsgHistory(initialDevVersionChangeCommitShas[0]) : [];
-            determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas, commitMessageHistory);
-          }
-        } else if (lastProdVersion) {
-          determinedVersion = lastProdVersion;
+      if (this.containsVersionableCommits(commitMessageHistory)) {
+        if (lastProdVersion) {
+          determinedVersion = this.calculateRegular(strategyType, commitMessageHistory, lastProdVersion);
+        } else if (currentBranchName === productionBranchName) {
+          determinedVersion = VersioningAgent.startingProdVersion;
         } else {
-          for (let i = commitMessageHistory.length - 1; i >= 0; i--) {
-            if (commitMessageHistory[i].includes(GitRunner.initialCommitTag)) {
-              determinedVersion = this.extractVersion(commitMessageHistory[i]);
+          let initialDevVersionChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
+          commitMessageHistory = (initialDevVersionChangeCommitShas.length > 0)
+              ? gitRunner.getCommitMsgHistory(initialDevVersionChangeCommitShas[0]) : [];
+          determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas, commitMessageHistory);
+        }
+      } else if (lastProdVersion) {
+        determinedVersion = lastProdVersion;
+      } else {
+        for (let i = commitMessageHistory.length - 1; i >= 0; i--) {
+          if (commitMessageHistory[i].includes(GitRunner.initialCommitTag)) {
+            determinedVersion = this.extractVersion(commitMessageHistory[i]);
 
-              if (determinedVersion) {
-                if (lastProdVersion === "" && currentBranchName === productionBranchName) {
-                  determinedVersion = VersioningAgent.startingProdVersion;
-                } else {
-                  Logger.publish({
-                    loggingLevelTarget: Logger.Level.VERBOSE,
-                    message: "Using the version found in the last recorded Initial Commit since no other applicable " +
-                        "commits exist to determine the version.",
-                    isLabelIncluded: true,
-                    outputType: Logger.OutputType.SHELL
-                  });
-                }
-
-                break;
+            if (determinedVersion) {
+              if (lastProdVersion === "" && currentBranchName === productionBranchName) {
+                determinedVersion = VersioningAgent.startingProdVersion;
               } else {
                 Logger.publish({
-                  loggingLevelTarget: Logger.Level.ERROR,
-                  message: "It has been detected that the version found in the Initial Commit does not meet semantic " +
-                      "version formatting standards (see https://semver.org for more details). Perhaps it was added manually " +
-                      "or changed using Git rebase. Please fix this commit and try again.",
+                  loggingLevelTarget: Logger.Level.VERBOSE,
+                  message: "Using the version found in the last recorded Initial Commit since no other applicable " +
+                      "commits exist to determine the version.",
                   isLabelIncluded: true,
                   outputType: Logger.OutputType.SHELL
                 });
-                process.exit(1);
               }
+
+              break;
+            } else {
+              throw new VersionFormattingException("It has been detected that the version found in the Initial Commit " +
+                  "does not meet semantic version formatting standards (see https://semver.org for more details). " +
+                  "Perhaps it was added manually or changed using Git rebase. Please fix this commit and try again.");
             }
           }
         }
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
       }
 
       if (determinedVersion && determinedVersion === lastProdVersion && currentBranchName !== productionBranchName) {
@@ -596,13 +571,7 @@ class VersioningAgent {
           outputType: Logger.OutputType.SHELL
         });
       } else {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: "Missing applicable commits used to determine the version.",
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
+        throw new InvalidGitDataException("Missing applicable commits used to determine the version.");
       }
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the VersioningAgent determine function.");

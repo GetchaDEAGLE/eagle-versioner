@@ -26,27 +26,17 @@ class SpellingAssistant {
   constructor(extraDictWordsDir, extraDictWordsFileName) {
     if (typeof extraDictWordsDir === "string" && extraDictWordsDir && typeof extraDictWordsFileName === "string"
         && extraDictWordsFileName) {
-      try {
-        let fileSystemHelper = new FileSystemHelper();
-        let dictionary = {};
-        let affName = "aff";
-        let dicName = "dic";
-        dictionary[affName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
-            "index." + affName);
-        dictionary[dicName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
-            "index." + dicName);
-        this.spellChecker = nSpell(dictionary);
-        this.spellChecker.personal(SpellingAssistant.defaultExtraDictWords.join("\n"));
-        this.spellChecker.personal(this.getExtraDictionaryWords(extraDictWordsDir, extraDictWordsFileName).join("\n"));
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.INQUIRER
-        });
-        process.exit(1);
-      }
+      let fileSystemHelper = new FileSystemHelper();
+      let dictionary = {};
+      let affName = "aff";
+      let dicName = "dic";
+      dictionary[affName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+          "index." + affName);
+      dictionary[dicName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+          "index." + dicName);
+      this.spellChecker = nSpell(dictionary);
+      this.spellChecker.personal(SpellingAssistant.defaultExtraDictWords.join("\n"));
+      this.spellChecker.personal(this.getExtraDictionaryWords(extraDictWordsDir, extraDictWordsFileName).join("\n"));
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant constructor.");
     }

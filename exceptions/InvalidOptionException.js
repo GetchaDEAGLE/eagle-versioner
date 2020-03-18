@@ -1,14 +1,14 @@
 /**
- * Illegal argument exception used in methods where argument issues occur.
+ * Invalid option exception used in methods where invalid options are encountered.
  * See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this</a>
  * for more details.
  */
-class InvalidArgumentException extends Error {
+class InvalidOptionException extends Error {
   /**
    * Constructor to perform important class inheritance operations.
    * @param {string} message The message assigned to the exception.
    */
-  constructor(message = "Invalid argument passed to function.") {
+  constructor(message = "Invalid option has been encountered.") {
     // call parent constructor
     super();
 
@@ -16,9 +16,9 @@ class InvalidArgumentException extends Error {
     Error.captureStackTrace(this, this.constructor);
 
     // assign values to inherited local class variables
-    this.name = "IllegalArgumentException";
+    this.name = "InvalidOptionException";
     this.message = message;
   }
 }
 
-module.exports = InvalidArgumentException;
+module.exports = InvalidOptionException;

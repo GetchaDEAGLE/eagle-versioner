@@ -12,6 +12,7 @@ const packageJson = require("../package.json");
 const VersioningAgent = require("../components/VersioningAgent");
 const OptionsManager = require("../components/OptionsManager");
 const IOException = require("../exceptions/IOException");
+const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsException");
 
 /**
  * The main command that is the entry-point into the program.
@@ -55,15 +56,15 @@ const IOException = require("../exceptions/IOException");
       .option("--logging-level <loggingLevelTarget>", "the logging level target (default: " +
           Logger.Level.getName(Logger.Level.INFO).toLowerCase() + ")")
       .action((options) => {
-        if (typeof options === "object") {
-          let appliedOptions = new OptionsManager().set({
-            loggingLevel: colors.unstyle(options.loggingLevel),
-            prodBranch: colors.unstyle(options.prodBranch),
-            strategy: colors.unstyle(options.strategy),
-            devAppendage: colors.unstyle(options.devAppendage)
-          });
+        try {
+          if (typeof options === "object") {
+            let appliedOptions = new OptionsManager().set({
+              loggingLevel: colors.unstyle(options.loggingLevel),
+              prodBranch: colors.unstyle(options.prodBranch),
+              strategy: colors.unstyle(options.strategy),
+              devAppendage: colors.unstyle(options.devAppendage)
+            });
 
-          try {
             Logger.publish({
               loggingLevelTarget: Logger.Level.INFO,
               message: new VersioningAgent().determine(
@@ -75,21 +76,15 @@ const IOException = require("../exceptions/IOException");
               isLabelIncluded: false,
               outputType: Logger.OutputType.SHELL
             });
-          } catch (error) {
-            Logger.publish({
-              loggingLevelTarget: Logger.Level.ERROR,
-              message: error.message,
-              isLabelIncluded: true,
-              outputType: Logger.OutputType.SHELL
-            });
-            process.exit(1);
+          } else {
+            throw new InvalidCliCmdParamsException("There was an error parsing the command options. Be sure to use " +
+                "quotes around arguments with multiple words separated by spaces (e.g. ev commit --manual --change-type " +
+                "bug_fix --short-msg \"Fixed a session timeout bug\").");
           }
-        } else {
+        } catch (error) {
           Logger.publish({
             loggingLevelTarget: Logger.Level.ERROR,
-            message: "There was an error parsing the command options. Be sure to use quotes around arguments with " +
-                "multiple words separated by spaces (e.g. ev commit --manual --change-type bug_fix --short-msg \"Fixed " +
-                "a session timeout bug\").",
+            message: error.message,
             isLabelIncluded: true,
             outputType: Logger.OutputType.SHELL
           });
@@ -126,7 +121,7 @@ const IOException = require("../exceptions/IOException");
           VersioningAgent.StrategyType.getName(VersioningAgent.StrategyType.SEQUENTIAL).toLowerCase() + ")")
       .option("--logging-level <loggingLevelTarget>", "the logging level target (default: " +
           Logger.Level.getName(Logger.Level.INFO).toLowerCase() + ")")
-      .action((options) => {
+      .action(async (options) => {
         try {
           if (typeof options === "object") {
             let appliedOptions = new OptionsManager().set({
@@ -154,36 +149,19 @@ const IOException = require("../exceptions/IOException");
                         appliedOptions.newVersion, "", appliedOptions.isBreaking,
                         appliedOptions.isInitialCommit, appliedOptions.insertSkipCiTag);
                   } else {
-                    Logger.publish({
-                      loggingLevelTarget: Logger.Level.ERROR,
-                      message: "The version is required for the version change type.",
-                      isLabelIncluded: true,
-                      outputType: Logger.OutputType.SHELL
-                    });
-                    process.exit(1);
+                    throw new InvalidCliCmdParamsException("The version is required for the version change type.");
                   }
                 } else if (appliedOptions.shortMsg) {
                   gitRunner.createCommit(GitRunner.ChangeType.getSymbol(appliedOptions.changeType),
                       appliedOptions.shortMsg, appliedOptions.longMsg, appliedOptions.isBreaking,
                       appliedOptions.isInitialCommit, appliedOptions.insertSkipCiTag);
                 } else {
-                  Logger.publish({
-                    loggingLevelTarget: Logger.Level.ERROR,
-                    message: "The short commit message is required for the " + colors.yellow(appliedOptions.changeType) +
-                        " change type.",
-                    isLabelIncluded: true,
-                    outputType: Logger.OutputType.SHELL
-                  });
-                  process.exit(1);
+                  throw new InvalidCliCmdParamsException("The short commit message is required for the " +
+                      colors.yellow(appliedOptions.changeType) + " change type.");
                 }
               } else {
-                Logger.publish({
-                  loggingLevelTarget: Logger.Level.ERROR,
-                  message: "The change type is required in order to use the manual (non-interactive mode).",
-                  isLabelIncluded: true,
-                  outputType: Logger.OutputType.SHELL
-                });
-                process.exit(1);
+                throw new InvalidCliCmdParamsException("The change type is required in order to use the manual " +
+                    "(non-interactive mode).");
               }
             } else {
               if (options.newVersion || options.changeType || options.devAppendage || options.insertSkipCiTag
@@ -209,15 +187,9 @@ const IOException = require("../exceptions/IOException");
               });
             }
           } else {
-            Logger.publish({
-              loggingLevelTarget: Logger.Level.ERROR,
-              message: "There was an error parsing the command options. Be sure to use quotes around arguments with " +
-                  "multiple words separated by spaces (e.g. ev commit --manual --change-type bug_fix --short-msg " +
-                  "\"Fixed a session timeout bug\").",
-              isLabelIncluded: true,
-              outputType: Logger.OutputType.SHELL
-            });
-            process.exit(1);
+            throw new InvalidCliCmdParamsException("There was an error parsing the command options. Be sure to use " +
+                "quotes around arguments with multiple words separated by spaces (e.g. ev commit --manual --change-type " +
+                "bug_fix --short-msg \"Fixed a session timeout bug\").");
           }
         } catch (error) {
           Logger.publish({
@@ -242,22 +214,26 @@ const IOException = require("../exceptions/IOException");
       .option("--logging-level <loggingLevelTarget>", "the logging level target (default: " +
           Logger.Level.getName(Logger.Level.INFO).toLowerCase() + ")")
       .action((options) => {
-        if (typeof options === "object") {
-          let appliedOptions = new OptionsManager().set({
-            loggingLevel: colors.unstyle(options.loggingLevel),
-            prodBranch: colors.unstyle(options.prodBranch),
-            changelogDirectory: colors.unstyle(options.directory),
-            changelogFilename: colors.unstyle(options.filename)
-          });
+        try {
+          if (typeof options === "object") {
+            let appliedOptions = new OptionsManager().set({
+              loggingLevel: colors.unstyle(options.loggingLevel),
+              prodBranch: colors.unstyle(options.prodBranch),
+              changelogDirectory: colors.unstyle(options.directory),
+              changelogFilename: colors.unstyle(options.filename)
+            });
 
-          new ChangelogCreator().generate(appliedOptions.changelogDirectory, appliedOptions.changelogFilename,
-              appliedOptions.prodBranch);
-        } else {
+            new ChangelogCreator().generate(appliedOptions.changelogDirectory, appliedOptions.changelogFilename,
+                appliedOptions.prodBranch);
+          } else {
+            throw new InvalidCliCmdParamsException("There was an error parsing the command options. Be sure to use " +
+                "quotes around arguments with multiple words separated by spaces (e.g. ev commit --manual --change-type " +
+                "bug_fix --short-msg \"Fixed a session timeout bug\").");
+          }
+        } catch (error) {
           Logger.publish({
             loggingLevelTarget: Logger.Level.ERROR,
-            message: "There was an error parsing the command options. Be sure to use quotes around arguments with " +
-                "multiple words separated by spaces (e.g. ev commit --manual --change-type bug_fix --short-msg " +
-                "\"Fixed a session timeout bug\").",
+            message: error.message,
             isLabelIncluded: true,
             outputType: Logger.OutputType.SHELL
           });

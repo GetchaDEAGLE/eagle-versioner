@@ -199,56 +199,47 @@ class ChangelogCreator {
    */
   generate(changelogDirectory, changelogFilename = ChangelogCreator.defaultChangelogFileName,
            productionBranchName = GitRunner.defaultProductionBranchName) {
+
     if (typeof changelogDirectory === "string" && changelogDirectory && typeof changelogFilename === "string"
         && changelogFilename && typeof productionBranchName === "string" && productionBranchName) {
-      try {
-        let fileSystemHelper = new FileSystemHelper();
-        let gitRunner = new GitRunner(Logger.OutputType.SHELL);
-        let currentBranchName = gitRunner.getCurrentBranchName();
-        let changelog = this.read(changelogDirectory, changelogFilename);
-        let changelogAdditions = "";
+      let fileSystemHelper = new FileSystemHelper();
+      let gitRunner = new GitRunner(Logger.OutputType.SHELL);
+      let currentBranchName = gitRunner.getCurrentBranchName();
+      let changelog = this.read(changelogDirectory, changelogFilename);
+      let changelogAdditions = "";
 
-        let lastVersion = this.getLastVersion(changelog, currentBranchName, productionBranchName);
-        let lastVersionCommitSha = (lastVersion)
-            ? gitRunner.getVersionCommitSha(lastVersion) : "";
+      let lastVersion = this.getLastVersion(changelog, currentBranchName, productionBranchName);
+      let lastVersionCommitSha = (lastVersion)
+          ? gitRunner.getVersionCommitSha(lastVersion) : "";
 
-        if (lastVersionCommitSha) {
-          changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory(lastVersionCommitSha, true),
-              currentBranchName, productionBranchName);
-        } else {
-          changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory("", true),
-              currentBranchName, productionBranchName);
-        }
+      if (lastVersionCommitSha) {
+        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory(lastVersionCommitSha, true),
+            currentBranchName, productionBranchName);
+      } else {
+        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory("", true),
+            currentBranchName, productionBranchName);
+      }
 
-        // if the changelog additions don't already exist at position 13 then the additions aren't redundant
-        if (changelogAdditions && changelog.indexOf(changelogAdditions) !== 13) {
-          let lastVersionIndex = (lastVersion) ? changelog.indexOf("## " + lastVersion) : -1;
-          changelog = (lastVersionIndex >= 0) ? changelog.substring(lastVersionIndex) : "";
-          let finalChangeLog = (changelog) ? ChangelogCreator.changelogHeading + changelogAdditions + "\n" + changelog
-              : ChangelogCreator.changelogHeading + changelogAdditions;
-          fileSystemHelper.writeAsString(changelogDirectory, changelogFilename, finalChangeLog);
-          Logger.publish({
-            loggingLevelTarget: Logger.Level.INFO,
-            message: "Created/updated the changelog.",
-            isLabelIncluded: false,
-            outputType: Logger.OutputType.SHELL
-          });
-        } else {
-          Logger.publish({
-            loggingLevelTarget: Logger.Level.INFO,
-            message: "There wasn't anything to add to the changelog.",
-            isLabelIncluded: false,
-            outputType: Logger.OutputType.SHELL
-          });
-        }
-      } catch (error) {
+      // if the changelog additions don't already exist at position 13 then the additions aren't redundant
+      if (changelogAdditions && changelog.indexOf(changelogAdditions) !== 13) {
+        let lastVersionIndex = (lastVersion) ? changelog.indexOf("## " + lastVersion) : -1;
+        changelog = (lastVersionIndex >= 0) ? changelog.substring(lastVersionIndex) : "";
+        let finalChangeLog = (changelog) ? ChangelogCreator.changelogHeading + changelogAdditions + "\n" + changelog
+            : ChangelogCreator.changelogHeading + changelogAdditions;
+        fileSystemHelper.writeAsString(changelogDirectory, changelogFilename, finalChangeLog);
         Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
+          loggingLevelTarget: Logger.Level.INFO,
+          message: "Created/updated the changelog.",
+          isLabelIncluded: false,
           outputType: Logger.OutputType.SHELL
         });
-        process.exit(1);
+      } else {
+        Logger.publish({
+          loggingLevelTarget: Logger.Level.INFO,
+          message: "There wasn't anything to add to the changelog.",
+          isLabelIncluded: false,
+          outputType: Logger.OutputType.SHELL
+        });
       }
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the ChangelogCreator generate function.");

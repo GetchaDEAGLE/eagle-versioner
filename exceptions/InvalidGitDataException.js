@@ -1,5 +1,5 @@
 /**
- * Invalid Git data exception used in methods when invalid Git data is encountered.
+ * Invalid Git data exception used in methods where invalid Git data is encountered.
  * See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this</a>
  * for more details.
  */

@@ -1,14 +1,14 @@
 /**
- * Illegal argument exception used in methods where argument issues occur.
+ * Invalid version exception used in methods where version isn't valid based on empirical version data.
  * See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this</a>
  * for more details.
  */
-class InvalidArgumentException extends Error {
+class InvalidVersionException extends Error {
   /**
    * Constructor to perform important class inheritance operations.
    * @param {string} message The message assigned to the exception.
    */
-  constructor(message = "Invalid argument passed to function.") {
+  constructor(message = "Version is not valid based on empirical version data.") {
     // call parent constructor
     super();
 
@@ -16,9 +16,9 @@ class InvalidArgumentException extends Error {
     Error.captureStackTrace(this, this.constructor);
 
     // assign values to inherited local class variables
-    this.name = "IllegalArgumentException";
+    this.name = "InvalidVersionException";
     this.message = message;
   }
 }
 
-module.exports = InvalidArgumentException;
+module.exports = InvalidVersionException;

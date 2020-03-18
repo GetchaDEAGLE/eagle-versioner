@@ -106,17 +106,7 @@ class FileSystemHelper {
     let fileContents;
 
     if (typeof fileDirectory === "string" && fileDirectory && typeof fileName === "string" && fileName) {
-      try {
-        fileContents = fileSystem.readFileSync(path.join(fileDirectory, "/", fileName));
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
-      }
+      fileContents = fileSystem.readFileSync(path.join(fileDirectory, "/", fileName));
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the FileSystemHelper readAsBuffer function.");
     }
@@ -135,17 +125,7 @@ class FileSystemHelper {
     let fileContents = "";
 
     if (typeof fileDirectory === "string" && fileDirectory && typeof fileName === "string" && fileName) {
-      try {
-        fileContents = fileSystem.readFileSync(path.join(fileDirectory, "/", fileName), "utf8");
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
-      }
+      fileContents = fileSystem.readFileSync(path.join(fileDirectory, "/", fileName), "utf8");
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the FileSystemHelper readAsString function.");
     }
@@ -163,18 +143,8 @@ class FileSystemHelper {
   writeAsString(fileDirectory, fileName, fileContents = "") {
     if (typeof fileDirectory === "string" && fileDirectory && typeof fileName === "string" && fileName
         && typeof fileContents === "string") {
-      try {
-        fileSystem.ensureFileSync(path.join(fileDirectory, "/", fileName));
-        fileSystem.writeFileSync(path.join(fileDirectory, "/", fileName), fileContents);
-      } catch (error) {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.SHELL
-        });
-        process.exit(1);
-      }
+      fileSystem.ensureFileSync(path.join(fileDirectory, "/", fileName));
+      fileSystem.writeFileSync(path.join(fileDirectory, "/", fileName), fileContents);
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the FileSystemHelper writeAsString function.");
     }

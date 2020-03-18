@@ -12,6 +12,8 @@ const SpellingAssistant = require("../components/SpellingAssistant");
 const VersioningAgent = require("../components/VersioningAgent");
 const OptionsManager = require("../components/OptionsManager");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
+const InvalidGitDataException = require("../exceptions/InvalidGitDataException");
+const InvalidVersionException = require("../exceptions/InvalidVersionException");
 
 // non-changing variables used by class
 const NOT_LISTED_SPELLING_CHOICE = colors.yellow("not listed (manually enter)");
@@ -234,19 +236,9 @@ class MenuCoordinator {
    * Constructor to create local class variables.
    */
   constructor() {
-    try {
-      this.spellingAssistant = new SpellingAssistant(path.join(FileSystemHelper.userHomeDirectory,
-          OptionsManager.settingsFolderName), OptionsManager.extraDictWordsFilename);
-      this.prompt = inquirer.createPromptModule();
-    } catch (error) {
-      Logger.publish({
-        loggingLevelTarget: Logger.Level.ERROR,
-        message: error.message,
-        isLabelIncluded: true,
-        outputType: Logger.OutputType.INQUIRER
-      });
-      process.exit(1);
-    }
+    this.spellingAssistant = new SpellingAssistant(path.join(FileSystemHelper.userHomeDirectory,
+        OptionsManager.settingsFolderName), OptionsManager.extraDictWordsFilename);
+    this.prompt = inquirer.createPromptModule();
   }
 
   /**
@@ -488,9 +480,13 @@ class MenuCoordinator {
 
   /**
    * Creates the commit prompts to perform the commit.
+   * @returns {boolean} True if all selected prompts execute their actions successful and false if not.
+   * @throws InvalidGitDataException when the current branch already has commits and an Initial Commit has been specified.
+   * @throws InvalidVersionException when the specified version isn't valid based on empirical data.
    */
   async createCommitPrompts() {
     let gitRunner = new GitRunner(Logger.OutputType.INQUIRER);
+    let isSuccessful = true;
 
     try {
       let commitTypeResult = await this.prompt([MenuCoordinator.commitTypeQuestion]);
@@ -541,14 +537,8 @@ class MenuCoordinator {
               productionBranchNameResult.productionBranchName
           );
         } else {
-          Logger.publish({
-            loggingLevelTarget: Logger.Level.ERROR,
-            message: "The current branch " + colors.yellow(currentBranchName) + " already has commits. In order to make " +
-                "an Initial Commit, the current branch must be empty.",
-            isLabelIncluded: true,
-            outputType: Logger.OutputType.INQUIRER
-          });
-          process.exit(1);
+          throw new InvalidGitDataException("The current branch " + colors.yellow(currentBranchName) + " already has " +
+              "commits. In order to make an Initial Commit, the current branch must be empty.");
         }
 
         MenuCoordinator.versionChangeQuestion.default = calculatedVersion;
@@ -567,7 +557,8 @@ class MenuCoordinator {
               outputType: Logger.OutputType.INQUIRER
             });
         } else {
-          process.exit(1);
+          throw new InvalidVersionException("The specified version " + colors.yellow(versionChangeResult.appliedVersion) +
+              " isn't valid based on empirical data.");
         }
       } else {
         MenuCoordinator.shortCommitMsgQuestion.default =
@@ -780,19 +771,14 @@ class MenuCoordinator {
         }
 
         if (retryCommitResult.retryCommit === false) {
-          process.exit(1);
-        } else {
-          process.exit(0);
+          isSuccessful = false;
         }
       } else {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.INQUIRER
-        });
+        isSuccessful = false;
       }
     }
+
+    return isSuccessful;
   }
 }
 

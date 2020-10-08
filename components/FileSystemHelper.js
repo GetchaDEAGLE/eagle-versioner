@@ -2,22 +2,30 @@
 const fileSystem = require("fs-extra");
 const path = require("path");
 const os = require("os");
-const Logger = require("./Logger");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 
 // non-changing variables used by class
-const MAX_FILE_PATH_AND_FILENAME_CHAR_LENGTH = 255;
+const MAX_FILE_PATH_CHAR_LENGTH = 4096;
+const MAX_FILENAME_CHAR_LENGTH = 255;
 
 /**
  * Provides functionality to work with the file system to get directory listing, detect if a file is valid, etc.
  */
 class FileSystemHelper {
   /**
-   * Returns the maximum aggregated file path and file name character length.
-   * @returns {number} The the maximum aggregated file path and file name character length.
+   * Returns the maximum file path character length.
+   * @returns {number} The the maximum file path character length.
    */
-  static get maxFilePathAndFileNameCharLength() {
-    return MAX_FILE_PATH_AND_FILENAME_CHAR_LENGTH;
+  static get maxFilePathCharLength() {
+    return MAX_FILE_PATH_CHAR_LENGTH;
+  }
+
+  /**
+   * Returns the maximum filename character length.
+   * @returns {number} The the maximum filename character length.
+   */
+  static get maxFilenameCharLength() {
+    return MAX_FILENAME_CHAR_LENGTH;
   }
 
   /**
@@ -86,7 +94,8 @@ class FileSystemHelper {
 
     if (typeof fileDirectory === "string" && fileDirectory && typeof fileName === "string" && fileName) {
       isFilePathAndNameTooLong =
-          fileDirectory.length + fileName.length <= FileSystemHelper.maxFilePathAndFileNameCharLength;
+          (fileName.length < FileSystemHelper.maxFilenameCharLength
+              && fileDirectory.length + fileName.length <= FileSystemHelper.maxFilePathCharLength);
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the FileSystemHelper " +
           "getIsValidFilePathAndNameCharLength function.");

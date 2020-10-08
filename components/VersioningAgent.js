@@ -163,15 +163,15 @@ class VersioningAgent {
     if (typeof versionA === "string" && versionA && typeof versionB === "string" && versionB) {
       let firstVersionComponents = this.extractVersionComponents(versionA);
       let secondVersionComponents = this.extractVersionComponents(versionB);
-      isGreater = ((firstVersionComponents[0] > secondVersionComponents[0])
-          || (firstVersionComponents[0] === secondVersionComponents[0]
-              && firstVersionComponents[1] > secondVersionComponents[1])
-          || (firstVersionComponents[0] === secondVersionComponents[0]
-              && firstVersionComponents[1] === secondVersionComponents[1]
-              && firstVersionComponents[2] > secondVersionComponents[2])
-          || (firstVersionComponents[0] === secondVersionComponents[0]
-              && firstVersionComponents[1] === secondVersionComponents[1]
-              && firstVersionComponents[2] === secondVersionComponents[2]
+      isGreater = ((parseInt(firstVersionComponents[0], 10) > parseInt(secondVersionComponents[0], 10))
+          || (parseInt(firstVersionComponents[0], 10) === parseInt(secondVersionComponents[0], 10)
+              && parseInt(firstVersionComponents[1], 10) > parseInt(secondVersionComponents[1], 10))
+          || (parseInt(firstVersionComponents[0], 10) === parseInt(secondVersionComponents[0], 10)
+              && parseInt(firstVersionComponents[1], 10) === parseInt(secondVersionComponents[1], 10)
+              && parseInt(firstVersionComponents[2], 10) > parseInt(secondVersionComponents[2], 10))
+          || (parseInt(firstVersionComponents[0], 10) === parseInt(secondVersionComponents[0], 10)
+              && parseInt(firstVersionComponents[1], 10) === parseInt(secondVersionComponents[1], 10)
+              && parseInt(firstVersionComponents[2], 10) === parseInt(secondVersionComponents[2], 10)
               && firstVersionComponents.length === 3
               && secondVersionComponents.length === 4));
     } else {

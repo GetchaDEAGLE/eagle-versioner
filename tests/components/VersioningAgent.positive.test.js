@@ -168,50 +168,24 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     expect(VersioningAgent.devVersionRegex.test("1.1.2-latest")).toBe(true);
   });
 
-  test("Tests if the specified version is greater than the other version.", () => {
+  test("Tests if the specified versions are greater than the other versions.", () => {
     expect(new VersioningAgent().isGreater("4.0.0", "4.0.0-latest")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
     expect(new VersioningAgent().isGreater("4.1.0-latest", "4.0.1")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
     expect(new VersioningAgent().isGreater("4.1.1", "4.1.0")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
     expect(new VersioningAgent().isGreater("4.1.0", "4.0.1")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
     expect(new VersioningAgent().isGreater("4.0.1", "4.0.0")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
     expect(new VersioningAgent().isGreater("4.0.2", "4.0.1")).toBe(true);
-  });
-
-  test("Tests if the specified version is greater than the other version.", () => {
+    expect(new VersioningAgent().isGreater("1.10.0-SNAPSHOT", "1.9.0")).toBe(true);
     expect(new VersioningAgent().isGreater("4.0.5", "4.0.0-latest")).toBe(true);
   });
 
   test("Tests if the proposed version is valid.", () => {
     expect(new VersioningAgent().isValid("1.0.0", "1.0.0", "1.0.1",
         "master", "master", Logger.OutputType.CONSOLE)).toBe(false);
-  });
-
-  test("Tests if the proposed version is valid.", () => {
     expect(new VersioningAgent().isValid("1.0.5", "1.0.0", "1.0.1",
         "master", "master", Logger.OutputType.CONSOLE)).toBe(false);
-  });
-
-  test("Tests if the proposed version is valid.", () => {
     expect(new VersioningAgent().isValid("1.0.5", "1.0.6-latest", "1.0.1",
         "master", "master", Logger.OutputType.CONSOLE)).toBe(false);
-  });
-
-  test("Tests if the proposed version is valid.", () => {
     expect(new VersioningAgent().isValid("1.0.5", "1.0.6", "1.0.1-latest",
         "latest", "master", Logger.OutputType.CONSOLE)).toBe(false);
   });

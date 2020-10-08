@@ -3,12 +3,12 @@
  * See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types">this</a>
  * for more details.
  */
-class InvalidArgumentException extends Error {
+class IllegalArgumentException extends Error {
   /**
    * Constructor to perform important class inheritance operations.
    * @param {string} message The message assigned to the exception.
    */
-  constructor(message = "Invalid argument passed to function.") {
+  constructor(message = "Illegal argument passed to function.") {
     // call parent constructor
     super();
 
@@ -21,4 +21,4 @@ class InvalidArgumentException extends Error {
   }
 }
 
-module.exports = InvalidArgumentException;
+module.exports = IllegalArgumentException;

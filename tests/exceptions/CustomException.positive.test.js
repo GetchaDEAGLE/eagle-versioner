@@ -7,6 +7,7 @@ const IOException = require("../../exceptions/IOException");
 const MissingToolException = require("../../exceptions/MissingToolException");
 const ShellCmdFailureException = require("../../exceptions/ShellCmdFailureException");
 const VersionFormattingException = require("../../exceptions/VersionFormattingException");
+const InvalidVersionException = require("../../exceptions/InvalidVersionException");
 
 describe("Tests all custom exceptions for proper functionality.", () => {
   test("Tests throwing a FrozenObjectException.", () => {
@@ -71,5 +72,13 @@ describe("Tests all custom exceptions for proper functionality.", () => {
     };
 
     expect(customError).toThrow(VersionFormattingException);
+  });
+
+  test("Tests throwing an InvalidVersionException.", () => {
+    const customError = () => {
+      throw new InvalidVersionException("Version is not valid based on empirical version data.");
+    };
+
+    expect(customError).toThrow(InvalidVersionException);
   });
 });

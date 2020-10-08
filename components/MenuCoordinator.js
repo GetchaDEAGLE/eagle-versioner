@@ -756,13 +756,14 @@ class MenuCoordinator {
         });
       }
     } catch (error) {
+      Logger.publish({
+        loggingLevelTarget: Logger.Level.ERROR,
+        message: error.message,
+        isLabelIncluded: true,
+        outputType: Logger.OutputType.INQUIRER
+      });
+
       if (error.name === "ShellCmdFailureException") {
-        Logger.publish({
-          loggingLevelTarget: Logger.Level.ERROR,
-          message: error.message,
-          isLabelIncluded: true,
-          outputType: Logger.OutputType.INQUIRER
-        });
         let retryCommitResult = await this.prompt([MenuCoordinator.retryCommitQuestion]);
 
         while (retryCommitResult.retryCommit) {

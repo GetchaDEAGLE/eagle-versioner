@@ -30,9 +30,9 @@ class SpellingAssistant {
       let dictionary = {};
       let affName = "aff";
       let dicName = "dic";
-      dictionary[affName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+      dictionary[affName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en")),
           "index." + affName);
-      dictionary[dicName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en-us")),
+      dictionary[dicName] = fileSystemHelper.readAsBuffer(path.dirname(require.resolve("dictionary-en")),
           "index." + dicName);
       this.spellChecker = nSpell(dictionary);
       this.spellChecker.personal(SpellingAssistant.defaultExtraDictWords.join("\n"));

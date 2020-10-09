@@ -1,0 +1,6 @@
+# ignore everything
+*
+
+# except for necessary Docker files
+!.dockerignore
+!Dockerfile

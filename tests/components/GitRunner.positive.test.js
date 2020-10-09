@@ -5,6 +5,7 @@ const shell = require("shelljs");
 const path = require("path");
 const GitRunner = require("../../components/GitRunner");
 const Logger = require("../../components/Logger");
+const ShellCmdFailureException = require("../../exceptions/ShellCmdFailureException");
 
 describe("Tests the GitRunner for proper functionality.", () => {
   let testRepoZip = new AdmZip(path.join(__dirname, "/assets/test-repo.zip"));
@@ -101,5 +102,35 @@ describe("Tests the GitRunner for proper functionality.", () => {
         "It's really cool.");
     shell.cd("..");
     fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+  });
+
+  test("Tests getting the contiguous WIP commits from available commit history.", () => {
+    let randomNumber = Math.floor((Math.random() * 10000) + 1);
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
+    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("git checkout master", { silent: false });
+    let gitRunner = new GitRunner(Logger.OutputType.SHELL);
+    expect(gitRunner.getContiguousWipCommitCount()).toBe(0);
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+  });
+
+  test("Tests removing commits and staging the files.", () => {
+    let randomNumber = Math.floor((Math.random() * 10000) + 1);
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
+    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("git checkout master", { silent: false });
+
+    const testRemovingCommitsAndStaging = () => {
+      new GitRunner(Logger.OutputType.SHELL).removeCommitsAndStage(2);
+    };
+
+    expect(testRemovingCommitsAndStaging).not.toThrow(ShellCmdFailureException);
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+  });
+
+  test("Tests if the branch name is in a valid format.", () => {
+    expect(new GitRunner(Logger.OutputType.CONSOLE).checkReference("master")).toBe(true);
   });
 });

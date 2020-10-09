@@ -95,4 +95,16 @@ describe("Tests the GitRunner for proper functionality.", () => {
       new GitRunner(Logger.OutputType.CONSOLE).checkReference([]);
     }).toThrow(IllegalArgumentException);
   });
+
+  test("Tests getting contiguous WIP commits with an invalid argument.", () => {
+    expect(() => {
+      new GitRunner(Logger.OutputType.CONSOLE).getContiguousWipCommitCount([]);
+    }).toThrow(IllegalArgumentException);
+  });
+
+  test("Tests removing commits and staging the files with an invalid argument.", () => {
+    expect(() => {
+      new GitRunner(Logger.OutputType.CONSOLE).removeCommitsAndStage([]);
+    }).toThrow(IllegalArgumentException);
+  });
 });

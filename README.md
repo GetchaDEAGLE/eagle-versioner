@@ -24,9 +24,6 @@
   <a href="https://www.danieleagle.com" target="_blank">
     <img alt="Web" src="https://img.shields.io/badge/Web-danieleagle.com-blue?style=flat-square" />
   </a>
-  <a href="https://paypal.me/GetchaDEAGLE" target="_blank">
-    <img alt="Donate" src="https://img.shields.io/badge/donate-paypal-purple?style=flat-square" />
-  </a>
 </p>
 
 Eagle Versioner is a powerful semantic versioning tool inspired by
@@ -47,23 +44,23 @@ to calculate the version based on the changes made to the repository. It closely
 7. [Logging Levels](#logging-levels)
 8. [Breaking Changes](#breaking-changes)
 9. [Handling an Initial Commit](#handling-an-initial-commit)
-10. [Multiple Production Branches](#multiple-production-branches)
-11. [Changelog Generation](#changelog-generation)
-12. [Merging Changes from Other Branches](#merging-changes-from-other-branches)
-13. [CLI Help Output](#cli-help-output)
-14. [Usage Example](#usage-example)
-15. [Versioning Automation](#versioning-automation)
-16. [Docker Image Tagging](#docker-image-tagging)
-17. [Skipping CICD Pipeline Job Trigger](#skipping-cicd-pipeline-job-trigger)
-18. [Issues and Feature Requests](#issues-and-feature-requests)
-19. [Donations](#donations)
+10. [Managing Work in Progress](#managing-work-in-progress)
+11. [Multiple Production Branches](#multiple-production-branches)
+12. [Changelog Generation](#changelog-generation)
+13. [Merging Changes from Other Branches](#merging-changes-from-other-branches)
+14. [CLI Help Output](#cli-help-output)
+15. [Usage Example](#usage-example)
+16. [Versioning Automation](#versioning-automation)
+17. [Docker Image Tagging](#docker-image-tagging)
+18. [Skipping CICD Pipeline Job Trigger](#skipping-cicd-pipeline-job-trigger)
+19. [Issues and Feature Requests](#issues-and-feature-requests)
 20. [Latest Changes](#latest-changes)
 21. [More from the Author](#more-from-the-author)
 22. [Copyright/License Notice](#copyrightlicense-notice)
 
 ## Installation
 
-For best results, Eagle Versioner should be installed as a global package so the main **ev** command can be invoked from anywhere
+For best results, Eagle Versioner should be installed as a global package, so the main **ev** command can be invoked from anywhere
 in the terminal.
 
 ```bash
@@ -82,22 +79,27 @@ version.
 
 * **Specialized Commit Creation** - Provides a mechanism for creating commits based on the desired change type. Enforces
 a custom implementation of the Angular Commit Message Convention by allowing the user to pick from a list of change types
-and entering the desired message while ensuring the commit message is formatted correctly. It also offers an option to
-check spelling (interactive mode only).
+and entering the desired message while ensuring proper commit message formatting. It also offers an option to
+check spelling (interactive mode only) and persist words added to the dictionary under the user's home directory
+(e.g. `/home/username/.ev/custom-dictionary-words.txt` or `c:\Users\username\.ev\custom-dictionary-words.txt`).
 
 ## Change Types
 
-* **Bug Fix (causes version change)** - It's fun squashing bugs.
+* **WIP** - Work is in progress and ongoing. Expect to squash some commits.
+* **Bug Fix (causes patch version change)** - It's fun squashing bugs.
 * **Changelog** - Updating the changelog for project visibility.
 * **Chore** - Generic chore that doesn't fall in another change type.
-* **Dependency** - Bumping dependencies or adding new ones.
+* **Dependency (causes patch version change)** - Bumping dependencies or adding new ones.
 * **Doc** - Documentation to keep stakeholders happy.
-* **Feature (causes version change)** - Something new and shiny was added.
-* **Perf (causes version change)** - The application is performing way better now.
+* **Feature (causes minor version change)** - Something new and shiny was added.
+* **Perf (causes patch version change)** - The application is performing way better now.
 * **Refactor** - For refactoring code but not adding new functionality.
 * **Styling** - Fixing ugly code (spaces are better than tabs).
 * **Test** - The addition of tests (e.g. unit tests, integration tests, etc.).
 * **Version Change** - Updates to the file(s) containing version information.
+
+**Note:** If the change type has been specified as a breaking change, the major version will be changed and minor and
+patch versions reset to zero.
 
 ## Version Commit
 
@@ -178,8 +180,18 @@ branch). This will ensure the only commit is a version change commit which will 
 versions.
 
 **Note:** An Initial Commit can only be created once. Also, the creation of an Initial Commit will fail if the current
-branch already has commits. Therefore, an Initial Commit is intended as the first commit to seed the branch with existing
+branch already has commits. Therefore, an Initial Commit should be the first commit to seed the branch with existing
 code which encompasses several features.
+
+## Managing Work in Progress
+
+During ongoing development of a project, it is common for developers to work in a feature branch and create many commits.
+It is nice to be able to create several commits while making changes so that they remain in history and can be reverted
+if necessary. Eagle Versioner makes this process easy by allowing for the creation of WIP commits. Once all development
+wraps in that feature branch, a final commit can be created which combines all the prior contiguous WIP commits into
+a commit of the final specified change type.
+
+**Note:** Recommended for a feature branch only, ideally from a forked repository.
 
 ## Multiple Production Branches
 
@@ -305,6 +317,7 @@ Options:
   --is-breaking                         indicates if the commit is a breaking change (default: false)
   --is-initial-commit                   indicates if the change is for an initial commit [required for the version_change type] (default: false)
   --insert-skip-ci-tag                  inserts the [ci-skip] tag in the commit message (default: false)
+  --squash-wip                          option to squash prior contiguous WIP commits [only recommended for feature branches] (default: false)
   --new-version <newVersion>            the new version [required for the version_change type]
   --prod-branch <branchName>            the name of the production branch (default: master)
   --dev-appendage <appendageType>       the type of dev version appendage [required for the version_change type] (default: branch_name)
@@ -509,11 +522,6 @@ As with all software, issues can and are likely to occur. When encountering a po
 assistance, or have an idea for a potential feature, please submit an **Issue** on this repository. Issues will be
 reviewed on a regular basis with a resolution being the main goal within a timely manner. However, turnaround time is
 not guaranteed.
-
-## Donations
-
-This project is developed and maintained on the side and requires a substantial amount of time. Donations are greatly
-appreciated. Please [click here](https://paypal.me/GetchaDEAGLE) to make a donation.
 
 ## Latest Changes
 

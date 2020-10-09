@@ -17,7 +17,7 @@ const COMMIT_MSG_END_TAG = "[msg-end]"; // tag inserted at end of commit message
 const CI_SKIP_TAG = "[ci-skip]"; // indicates commit shouldn't trigger CICD pipeline if contained in commit message
 const MINIMUM_REQ_GIT_VER = "2.22.0";
 const CHANGE_TYPE = new Enum("BUG_FIX", "CHANGELOG", "CHORE", "DEPENDENCY", "DOC", "FEATURE", "PERF", "REFACTOR",
-    "STYLING", "TEST", "VERSION_CHANGE");
+    "STYLING", "TEST", "VERSION_CHANGE", "WIP");
 const BREAKING_CHANGE_TAG = "[BREAKING]";
 const INITIAL_COMMIT_TAG = "[INITIAL_COMMIT]";
 const MAX_SHORT_COMMIT_MSG_CHAR_LENGTH = 60;
@@ -564,6 +564,58 @@ class GitRunner {
     }
 
     return exitCode;
+  }
+
+  /**
+   * Gets the count of contiguous WIP commits.
+   * @param {string} lastProdVersionCommitSha
+   * @returns {number} The number of contiguous WIP commits.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  getContiguousWipCommitCount(lastProdVersionCommitSha = "") {
+    let contiguousWipCommitCount = 0;
+
+    if (typeof lastProdVersionCommitSha === "string") {
+      let commitMessageHistory = this.getCommitMsgHistory(lastProdVersionCommitSha, true);
+
+      for (let i = 0; i < commitMessageHistory.length; i++) {
+        if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.WIP))) {
+          contiguousWipCommitCount++;
+        } else {
+          break;
+        }
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the GitRunner getContiguousWipCommitCount function.");
+    }
+
+    return contiguousWipCommitCount;
+  }
+
+  /**
+   * Removes the specified number of commits and stages all files belonging to them.
+   * @param {number} commitCount The number of commits to remove.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  removeCommitsAndStage(commitCount) {
+    if (typeof commitCount === "number" && commitCount > 0) {
+      let output = shell.exec("git reset --soft HEAD~" + commitCount.toString(), { silent: true });
+
+      if (output && typeof output.code === "number" && output.code === 0) {
+        Logger.publish({
+          loggingLevelTarget: Logger.Level.INFO,
+          message: "Successfully removed " + commitCount.toString() + " commits and staged the files.",
+          isLabelIncluded: false,
+          outputType: this.logOutputType
+        });
+      } else {
+        let errorMessage = (output.stdout) ? output.stdout : output.stderr;
+        throw new ShellCmdFailureException("The command to remove the commits and stage the files failed with the " +
+            "following message:\n\n" + colors.bgRed(errorMessage.trim()));
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the GitRunner removeCommitsAndStage function.");
+    }
   }
 }
 

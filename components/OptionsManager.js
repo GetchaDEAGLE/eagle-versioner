@@ -356,6 +356,12 @@ class OptionsManager {
         appliedOptions.manual = false;
       }
 
+      if (typeof options.squashWipCommits === "boolean") {
+        appliedOptions.squashWipCommits = options.squashWipCommits;
+      } else {
+        appliedOptions.squashWipCommits = false;
+      }
+
       if (appliedOptions.manual && typeof options.changeType === "string" && options.changeType) {
         appliedOptions.changeType = options.changeType.toLowerCase();
         this.validateChangeType(appliedOptions.changeType);

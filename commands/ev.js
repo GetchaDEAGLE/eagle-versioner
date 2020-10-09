@@ -108,6 +108,8 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
       .option("--is-initial-commit", "indicates if the change is for an initial commit [required for the " +
           GitRunner.ChangeType.getName(GitRunner.ChangeType.VERSION_CHANGE).toLowerCase() + " type] (default: false)")
       .option("--insert-skip-ci-tag", "inserts the [ci-skip] tag in the commit message (default: false)")
+      .option("--squash-wip", "option to squash prior contiguous WIP commits only recommended for " +
+          "feature branches] (default: false")
       .option("--new-version <newVersion>", "the new version [required for the " +
           GitRunner.ChangeType.getName(GitRunner.ChangeType.VERSION_CHANGE).toLowerCase() + " type]")
       .option("--prod-branch <branchName>", "the name of the production branch (default: " +
@@ -130,6 +132,7 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
               isInitialCommit: options.isInitialCommit,
               insertSkipCiTag: options.insertSkipCiTag,
               manual: options.manual,
+              squashWipCommits: options.squashWipCommits,
               changeType: colors.unstyle(options.changeType),
               newVersion: colors.unstyle(options.newVersion),
               prodBranch: colors.unstyle(options.prodBranch),
@@ -143,6 +146,41 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
 
             if (appliedOptions.manual) {
               if (appliedOptions.changeType) {
+                if (appliedOptions.squashWipCommits
+                    && GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.WIP
+                    && GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.VERSION_CHANGE) {
+                  Logger.publish({
+                    loggingLevelTarget: Logger.Level.VERBOSE,
+                    message: "Skipped squashing WIP commits since it isn't supported for the " +
+                        appliedOptions.changeType.toLowerCase() + " change type.",
+                    isLabelIncluded: true,
+                    outputType: Logger.OutputType.SHELL
+                  });
+                } else {
+                  Logger.publish({
+                    loggingLevelTarget: Logger.Level.WARNING,
+                    message: "Squashing WIP commits should only occur in a feature branch, ideally from a forked " +
+                        "repository - otherwise errors could occur.",
+                    isLabelIncluded: true,
+                    outputType: Logger.OutputType.SHELL
+                  });
+
+                  let lastProdVersionMap = gitRunner.getLastProdVersionMap();
+                  let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
+                  let contigousWipCommitCount = gitRunner.getContiguousWipCommitCount(lastProdVersionCommitSha);
+
+                  if (contigousWipCommitCount > 0) {
+                    gitRunner.removeCommitsAndStage(contigousWipCommitCount);
+                  } else {
+                    Logger.publish({
+                      loggingLevelTarget: Logger.Level.INFO,
+                      message: "There wasn't any WIP commits to squash.",
+                      isLabelIncluded: false,
+                      outputType: Logger.OutputType.SHELL
+                    });
+                  }
+                }
+
                 if (GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.VERSION_CHANGE) {
                   if (appliedOptions.newVersion) {
                     gitRunner.createCommit(GitRunner.ChangeType.getSymbol(appliedOptions.changeType),
@@ -165,7 +203,8 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
               }
             } else {
               if (options.newVersion || options.changeType || options.devAppendage || options.insertSkipCiTag
-                  || options.isBreaking || options.prodBranch || options.shortMsg || options.longMsg) {
+                  || options.squashWipCommits || options.isBreaking || options.prodBranch || options.shortMsg
+                  || options.longMsg) {
                 Logger.publish({
                   loggingLevelTarget: Logger.Level.VERBOSE,
                   message: "Ignoring specified options only applicable to manual (non-interactive) mode.",

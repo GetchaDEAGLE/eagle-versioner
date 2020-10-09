@@ -23,6 +23,8 @@ const COMMIT_TYPE_QUESTION = {
   name: "commitType",
   message: "Select the type of commit you wish to make (ensure files are added first via git add)",
   choices: [
+    colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.WIP) + ":") +
+    "                 Work in progress",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX) + ":") +
     "             Squashes a bug",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.CHANGELOG) + ":") +
@@ -51,6 +53,12 @@ const IS_BREAKING_CHANGE_QUESTION = {
   type: "confirm",
   name: "isBreakingChange",
   message: "Is this a breaking change?",
+  default: false
+};
+const IS_WIP_SQUASHED_QUESTION = {
+  type: "confirm",
+  name: "isWipSquashed",
+  message: "Squash prior contiguous WIP commits?",
   default: false
 };
 const IS_INITIAL_COMMIT_QUESTION = {
@@ -211,7 +219,6 @@ const VERSION_CHANGE_QUESTION = {
   validate: function validate(input) {
     let errorMessage = "";
 
-
     if (input.length === 0) {
       errorMessage = Logger.wordWrap("The version cannot be empty. Please try again.", Logger.maxCharsPerLine);
     } else if (input.indexOf(" ") >= 0) {
@@ -271,6 +278,14 @@ class MenuCoordinator {
    */
   static get isBreakingChangeQuestion() {
     return IS_BREAKING_CHANGE_QUESTION;
+  }
+
+  /**
+   * Gets the is WIP squashed question.
+   * @returns {{default: boolean, name: string, type: string, message: string}} The is WIP squashed question.
+   */
+  static get isWipSquashedQuestion() {
+    return IS_WIP_SQUASHED_QUESTION;
   }
 
   /**
@@ -696,6 +711,46 @@ class MenuCoordinator {
         }
       }
 
+      if (commitTypeResult.commitType
+          && !commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.WIP))
+          && !commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.VERSION_CHANGE))) {
+        let isWipSquashedResult = await this.prompt([MenuCoordinator.isWipSquashedQuestion]);
+        let isWipSquashed = (typeof isWipSquashedResult.isWipSquashed === "boolean")
+            ? isWipSquashedResult.isWipSquashed : false;
+
+        if (isWipSquashed) {
+          Logger.publish({
+            loggingLevelTarget: Logger.Level.WARNING,
+            message: "Squashing WIP commits should only occur in a feature branch, ideally from a forked repository - " +
+                "otherwise errors could occur.",
+            isLabelIncluded: true,
+            outputType: Logger.OutputType.INQUIRER
+          });
+
+          let lastProdVersionMap = gitRunner.getLastProdVersionMap();
+          let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
+          let contigousWipCommitCount = gitRunner.getContiguousWipCommitCount(lastProdVersionCommitSha);
+
+          if (contigousWipCommitCount > 0) {
+            gitRunner.removeCommitsAndStage(contigousWipCommitCount);
+          } else {
+            Logger.publish({
+              loggingLevelTarget: Logger.Level.INFO,
+              message: "There wasn't any WIP commits to squash.",
+              isLabelIncluded: false,
+              outputType: Logger.OutputType.INQUIRER
+            });
+          }
+        } else {
+          Logger.publish({
+            loggingLevelTarget: Logger.Level.VERBOSE,
+            message: "Skipped squashing WIP commits.",
+            isLabelIncluded: true,
+            outputType: Logger.OutputType.INQUIRER
+          });
+        }
+      }
+
       let isBreakingChangeResult = await this.prompt([MenuCoordinator.isBreakingChangeQuestion]);
       let isBreakingChange = (typeof isBreakingChangeResult.isBreakingChange === "boolean")
           ? isBreakingChangeResult.isBreakingChange : false;
@@ -704,6 +759,10 @@ class MenuCoordinator {
           ? isCiSkipTagInsertedResult.isCiSkipTagInserted : false;
 
       if (commitTypeResult.commitType
+          && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.WIP))) {
+        gitRunner.createCommit(GitRunner.ChangeType.WIP, shortCommitMessage, longCommitMessage, isBreakingChange,
+            isInitialCommit, isCiSkipTagInserted);
+      } else if (commitTypeResult.commitType
           && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.BUG_FIX))) {
         gitRunner.createCommit(GitRunner.ChangeType.BUG_FIX, shortCommitMessage, longCommitMessage, isBreakingChange,
             isInitialCommit, isCiSkipTagInserted);

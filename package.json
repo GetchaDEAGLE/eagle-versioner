@@ -42,6 +42,15 @@
     "type": "git",
     "url": "https://github.com/GetchaDEAGLE/eagle-versioner.git"
   },
+  "keywords": [
+    "semantic",
+    "versioning",
+    "changelog",
+    "version",
+    "wip",
+    "commit",
+    "calculate"
+  ],
   "author": "Daniel Eagle",
   "license": "MIT"
 }

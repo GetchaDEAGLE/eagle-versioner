@@ -1,6 +1,8 @@
 .editorconfig
 .eslintignore
 .eslintrc.json
+.dockerignore
+Dockerfile
 .github
 .idea
 *.dat

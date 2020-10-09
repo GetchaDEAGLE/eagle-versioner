@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [10.x, 12.x, 15.x]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@master
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node-version }}
       - name: npm install, build, lint, check for circular dependencies, and test
@@ -23,9 +23,7 @@ jobs:
           npm run lint
           npm run circular-dep-check
           npm run test:coverage
-      - name: Coveralls GitHub Action
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@master
         env:
           CI: true

@@ -2,8 +2,8 @@
 const path = require("path");
 const colors = require("ansi-colors");
 const nSpell = require("nspell");
-const FileSystemHelper = require("../components/FileSystemHelper");
-const Logger = require("../components/Logger");
+const FileSystemHelper = require("./FileSystemHelper");
+const Logger = require("./Logger");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 const IOException = require("../exceptions/IOException");
 

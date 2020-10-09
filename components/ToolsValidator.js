@@ -1,8 +1,8 @@
 // imports
 const colors = require("ansi-colors");
 const shell = require("shelljs");
-const Logger = require("../components/Logger");
-const GitRunner = require("../components/GitRunner");
+const Logger = require("./Logger");
+const GitRunner = require("./GitRunner");
 const IncompatibleToolException = require("../exceptions/IncompatibleToolException");
 const InvalidGitDataException = require("../exceptions/InvalidGitDataException");
 const MissingToolException = require("../exceptions/MissingToolException");

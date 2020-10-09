@@ -1,8 +1,8 @@
 // imports
 const colors = require("ansi-colors");
 const Enum = require("../data-structures/Enum");
-const Logger = require("../components/Logger");
-const GitRunner = require("../components/GitRunner");
+const Logger = require("./Logger");
+const GitRunner = require("./GitRunner");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 const VersionFormattingException = require("../exceptions/VersionFormattingException");
 const InvalidGitDataException = require("../exceptions/InvalidGitDataException");

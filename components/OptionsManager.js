@@ -1,11 +1,11 @@
 // imports
 const colors = require("ansi-colors");
-const ChangelogCreator = require("../components/ChangelogCreator");
-const GitRunner = require("../components/GitRunner");
-const FileSystemHelper = require("../components/FileSystemHelper");
-const Logger = require("../components/Logger");
-const VersioningAgent = require("../components/VersioningAgent");
-const ToolsValidator = require("../components/ToolsValidator");
+const ChangelogCreator = require("./ChangelogCreator");
+const GitRunner = require("./GitRunner");
+const FileSystemHelper = require("./FileSystemHelper");
+const Logger = require("./Logger");
+const VersioningAgent = require("./VersioningAgent");
+const ToolsValidator = require("./ToolsValidator");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 const InvalidOptionException = require("../exceptions/InvalidOptionException");
 const InvalidGitDataException = require("../exceptions/InvalidGitDataException");

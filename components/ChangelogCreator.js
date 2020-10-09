@@ -1,8 +1,8 @@
 // imports
-const FileSystemHelper = require("../components/FileSystemHelper");
-const Logger = require("../components/Logger");
-const VersioningAgent = require("../components/VersioningAgent");
-const GitRunner = require("../components/GitRunner");
+const FileSystemHelper = require("./FileSystemHelper");
+const Logger = require("./Logger");
+const VersioningAgent = require("./VersioningAgent");
+const GitRunner = require("./GitRunner");
 const IllegalArgumentException = require("../exceptions/IllegalArgumentException");
 const InvalidGitDataException = require("../exceptions/InvalidGitDataException");
 const IOException = require("../exceptions/IOException");
@@ -199,7 +199,6 @@ class ChangelogCreator {
    */
   generate(changelogDirectory, changelogFilename = ChangelogCreator.defaultChangelogFileName,
            productionBranchName = GitRunner.defaultProductionBranchName) {
-
     if (typeof changelogDirectory === "string" && changelogDirectory && typeof changelogFilename === "string"
         && changelogFilename && typeof productionBranchName === "string" && productionBranchName) {
       let fileSystemHelper = new FileSystemHelper();

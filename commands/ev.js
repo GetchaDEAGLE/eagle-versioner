@@ -108,8 +108,8 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
       .option("--is-initial-commit", "indicates if the change is for an initial commit [required for the " +
           GitRunner.ChangeType.getName(GitRunner.ChangeType.VERSION_CHANGE).toLowerCase() + " type] (default: false)")
       .option("--insert-skip-ci-tag", "inserts the [ci-skip] tag in the commit message (default: false)")
-      .option("--squash-wip", "option to squash prior contiguous WIP commits only recommended for " +
-          "feature branches] (default: false")
+      .option("--squash-wip", "option to squash prior contiguous WIP commits [only recommended for " +
+          "feature branches] (default: false)")
       .option("--new-version <newVersion>", "the new version [required for the " +
           GitRunner.ChangeType.getName(GitRunner.ChangeType.VERSION_CHANGE).toLowerCase() + " type]")
       .option("--prod-branch <branchName>", "the name of the production branch (default: " +

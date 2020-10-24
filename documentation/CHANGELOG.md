@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+* [BUG_FIX] Added Missing Semicolon
+
 ## 1.3.3
 
 * [BUG_FIX] Fixed Error Msg when Getting Branch Name for Non-branch Ref

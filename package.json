@@ -4,7 +4,7 @@
   "description": "From the creation of special commits, calculates the semantic version based on the Git branch and commit history.",
   "engines": {
     "npm": ">=3",
-    "node": ">=8"
+    "node": ">=10"
   },
   "bin": {
     "ev": "commands/ev.js"

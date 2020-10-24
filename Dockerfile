@@ -1,4 +1,4 @@
-FROM docker-hub.internal.revoldevel.com/node:10.22.0-alpine3.11
+FROM node:10.22.0-alpine3.11
 LABEL maintainer = "Daniel Eagle"
 
 ARG evVersion=1.3.2

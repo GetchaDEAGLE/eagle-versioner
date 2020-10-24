@@ -9,8 +9,8 @@
   <a href="https://actions-badge.atrox.dev/GetchaDEAGLE/eagle-versioner/goto?ref=master">
     <img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FGetchaDEAGLE%2Feagle-versioner%2Fbadge%3Fref%3Dmaster&style=flat-square" />
   </a>
-  <a href="https://coveralls.io/github/GetchaDEAGLE/eagle-versioner?branch=master">
-    <img alt="Coverage status" src="https://img.shields.io/coveralls/github/GetchaDEAGLE/eagle-versioner/master?style=flat-square" />
+  <a href="https://codecov.io/gh/GetchaDEAGLE/eagle-versioner">
+    <img alt="Coverage status" src="https://img.shields.io/codecov/c/github/GetchaDEAGLE/eagle-versioner?token=OU1YK0GBA9&style=flat-square" />
   </a>
   <a href="https://david-dm.org/GetchaDEAGLE/eagle-versioner">
     <img alt="Dependency status" src="http://img.shields.io/david/GetchaDEAGLE/eagle-versioner?style=flat-square" />

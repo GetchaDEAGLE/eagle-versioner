@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+* [BUG_FIX] Fixed Error Msg when Getting Branch Name for Non-branch Ref
+
 ## 1.3.2
 
 * [DEPENDENCY] Updated English Dictionary and Changed Package Ref

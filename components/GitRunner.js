@@ -203,6 +203,7 @@ class GitRunner {
    * Gets the current branch name.
    * @returns {string} The name of the current branch.
    * @throws ShellCmdFailureException when the Git command to retrieve the current branch name fails.
+   * @throws InvalidGitDataException when the Git command to retrieve the current branch name returns an empty result.
    */
   getCurrentBranchName() {
     let currentBranchName = "";
@@ -218,10 +219,13 @@ class GitRunner {
         isLabelIncluded: true,
         outputType: this.logOutputType
       });
-    } else {
+    } else if (output.stderr.trim()) {
       throw new ShellCmdFailureException("The command to retrieve the current branch name failed with the following " +
           "message:\n\n" + colors.bgRed(output.stderr.trim()) + "\n\nIf you wish to fix this problem, please move to " +
           "the applicable branch.");
+    } else {
+      throw new InvalidGitDataException("The command to retrieve the current branch name returned an empty result. " +
+          "Be sure a valid branch is checked out and not a commit SHA or tag.")
     }
 
     return currentBranchName;

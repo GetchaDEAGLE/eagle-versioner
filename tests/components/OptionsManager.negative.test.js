@@ -93,8 +93,8 @@ describe("Tests the OptionsManager for proper functionality.", () => {
   test("Tests validating the proposed version with an invalid argument.", () => {
     let testRepoZip = new AdmZip(path.join(__dirname, "/assets/test-repo.zip"));
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
 
     expect(() => {
@@ -121,7 +121,7 @@ describe("Tests the OptionsManager for proper functionality.", () => {
     }).toThrow(VersionFormattingException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests validating the commit messages with an invalid argument.", () => {

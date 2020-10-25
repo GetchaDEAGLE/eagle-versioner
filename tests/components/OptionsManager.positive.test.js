@@ -62,8 +62,8 @@ describe("Tests the OptionsManager for proper functionality.", () => {
 
   test("Tests validating the proposed version.", () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
 
     let options = {};
@@ -97,7 +97,7 @@ describe("Tests the OptionsManager for proper functionality.", () => {
     expect(validateProposedVersion).not.toThrow(InvalidVersionException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests validating commit messages.", () => {
@@ -135,21 +135,21 @@ describe("Tests the OptionsManager for proper functionality.", () => {
     };
 
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    shell.exec("mkdir " + path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), { silent: false });
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("mkdir " + path.join("/tmp", "/temp-" + randomNumber.toString()), { silent: false });
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git init", { silent: false });
     shell.exec("git checkout -b master", { silent: false });
 
     expect(validateInitialCommit).not.toThrow(InvalidGitDataException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests setting options.", () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
 
     let options = {
@@ -233,6 +233,6 @@ describe("Tests the OptionsManager for proper functionality.", () => {
     expect(setOptions).not.toThrow(InvalidOptionException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 });

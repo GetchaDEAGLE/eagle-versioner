@@ -1,6 +1,7 @@
 /* eslint-disable no-new */
 
 // imports
+const AdmZip = require("adm-zip");
 const fileSystem = require("fs-extra");
 const path = require("path");
 const shell = require("shelljs");
@@ -26,15 +27,30 @@ describe("Tests the GitRunner for proper functionality.", () => {
   test("Tests getting the current branch name while not in a repository.", () => {
     shell.cd("/");
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    shell.exec("mkdir -p tmp/temp-" + parseInt(randomNumber, 10));
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("mkdir -p tmp/temp-" + randomNumber.toString());
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
 
     expect(() => {
       new GitRunner(Logger.OutputType.CONSOLE).getCurrentBranchName();
     }).toThrow(ShellCmdFailureException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
+  });
+
+  test("Tests getting the current branch name using a checked out commit SHA.", () => {
+    let randomNumber = Math.floor((Math.random() * 10000) + 1);
+    let testRepoZip = new AdmZip(path.join(__dirname, "/assets/test-repo.zip"));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.exec("git checkout latest && git checkout 8c1db3d167bc650ce08da6cd438cc1748cf15705", { silent: false });
+
+    expect(() => {
+      new GitRunner(Logger.OutputType.CONSOLE).getCurrentBranchName();
+    }).toThrow(InvalidGitDataException);
+
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests getting the commit message history with an invalid argument.", () => {
@@ -46,15 +62,15 @@ describe("Tests the GitRunner for proper functionality.", () => {
   test("Tests getting the commit message history while not in a repository.", () => {
     shell.cd("/");
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    shell.exec("mkdir -p tmp/temp-" + parseInt(randomNumber, 10));
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("mkdir -p tmp/temp-" + randomNumber.toString());
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
 
     expect(() => {
       new GitRunner(Logger.OutputType.CONSOLE).getCommitMsgHistory();
     }).toThrow(ShellCmdFailureException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests getting the version commit SHA with an invalid argument.", () => {
@@ -78,8 +94,8 @@ describe("Tests the GitRunner for proper functionality.", () => {
   test("Tests creating a commit while not in a repository.", () => {
     shell.cd("/");
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    shell.exec("mkdir -p tmp/temp-" + parseInt(randomNumber, 10));
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    shell.exec("mkdir -p tmp/temp-" + randomNumber.toString());
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
 
     expect(() => {
       new GitRunner(Logger.OutputType.CONSOLE).createCommit(GitRunner.ChangeType.BUG_FIX, "Let's fix this bug",
@@ -87,7 +103,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
     }).toThrow(ShellCmdFailureException);
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests checking a reference with an invalid argument.", () => {

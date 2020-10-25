@@ -66,14 +66,14 @@ describe("Tests the FileSystemHelper for proper functionality.", () => {
     let fileContents = "This is a test.";
     let fileSystemHelper = new FileSystemHelper();
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    fileSystemHelper.writeAsString(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "test1.txt",
+    fileSystemHelper.writeAsString(path.join("/tmp", "/temp-" + randomNumber.toString()), "test1.txt",
         fileContents);
-    expect(fileSystemHelper.readAsString(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)),
+    expect(fileSystemHelper.readAsString(path.join("/tmp", "/temp-" + randomNumber.toString()),
         "test1.txt")).toBe(fileContents);
-    fileSystemHelper.writeAsString(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "test2.txt");
-    expect(fileSystemHelper.readAsString(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)),
+    fileSystemHelper.writeAsString(path.join("/tmp", "/temp-" + randomNumber.toString()), "test2.txt");
+    expect(fileSystemHelper.readAsString(path.join("/tmp", "/temp-" + randomNumber.toString()),
         "test2.txt")).toBe("");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests getting the current working directory.", () => {

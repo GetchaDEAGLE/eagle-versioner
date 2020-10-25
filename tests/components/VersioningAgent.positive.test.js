@@ -49,8 +49,8 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
 
   test("Tests the calculation of the initial dev version.", () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
     let initialDevVerChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
     let commitMessageHistory = gitRunner.getCommitMsgHistory("", true);
@@ -62,7 +62,7 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     expect(new VersioningAgent().calculateInitialDev(initialDevVerChangeCommitShas, commitMessageHistory)).toBe("0.3.0");
 
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests the calculation of the version with a commit containing a breaking change.", () => {
@@ -76,8 +76,8 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
   test("Tests the calculation of the version in the development branch using the sequential and collective strategies.",
       () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-        testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-        shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+        testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+        shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
     let calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.SNAPSHOT);
@@ -101,14 +101,14 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
     expect(calculatedVersion).toBe("4.0.3-latest");
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests the calculation of the version in the production branch using the sequential and collective strategies.",
       () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-        testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-        shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+        testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+        shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
     let calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
@@ -153,7 +153,7 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
         VersioningAgent.StrategyType.COLLECTIVE, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
     expect(calculatedVersion).toBe("4.1.0");
     shell.cd("..");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests getting the starting initial development version.", () => {

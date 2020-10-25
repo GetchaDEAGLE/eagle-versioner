@@ -136,8 +136,8 @@ describe("Tests the ChangelogCreator for proper functionality.", () => {
   test("Tests the creation of the changelog from the production branch.", () => {
     let changelogCreator = new ChangelogCreator();
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
     shell.exec("touch test19.txt", { silent: false });
     shell.exec("git add .", { silent: false });
@@ -147,8 +147,8 @@ describe("Tests the ChangelogCreator for proper functionality.", () => {
     shell.exec("git add .", { silent: false });
     new GitRunner(Logger.OutputType.SHELL).createCommit(GitRunner.ChangeType.VERSION_CHANGE, "3.0.2", "",
         false, false, true);
-    changelogCreator.generate(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
-    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
+    changelogCreator.generate(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
+    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
     expect(changelog).toBe("# Changelog\n" +
         "\n" +
         "## 3.0.2\n" +
@@ -196,17 +196,17 @@ describe("Tests the ChangelogCreator for proper functionality.", () => {
         "* [FEATURE] Added test feature.\n");
     shell.cd("/tmp");
 
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests the creation of the changelog from the production branch without any applicable changes.", () => {
     let changelogCreator = new ChangelogCreator();
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
-    changelogCreator.generate(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
-    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
+    changelogCreator.generate(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
+    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
     expect(changelog).toBe("# Changelog\n" +
         "\n" +
         "## 3.0.1\n" +
@@ -249,21 +249,21 @@ describe("Tests the ChangelogCreator for proper functionality.", () => {
         "* [BUG_FIX] Fixed bug\n" +
         "* [FEATURE] Added test feature.\n");
     shell.cd("/tmp");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
   test("Tests the creation of the changelog from the development branch with non-versioned changes.", () => {
     let changelogCreator = new ChangelogCreator();
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), false);
-    shell.cd(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
     shell.exec("touch test19.txt", { silent: false });
     shell.exec("git add .", { silent: false });
     new GitRunner(Logger.OutputType.SHELL).createCommit(GitRunner.ChangeType.BUG_FIX, "fixed a bug", "",
         false, false, false);
-    changelogCreator.generate(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
-    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)), "changelog.md");
+    changelogCreator.generate(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
+    let changelog = changelogCreator.read(path.join("/tmp", "/temp-" + randomNumber.toString()), "changelog.md");
     expect(changelog).toBe("# Changelog\n" +
         "\n" +
         "## Non-Versioned Changes\n" +
@@ -314,6 +314,6 @@ describe("Tests the ChangelogCreator for proper functionality.", () => {
         "* [BUG_FIX] Fixed bug\n" +
         "* [FEATURE] Added test feature.\n");
     shell.cd("/tmp");
-    fileSystem.removeSync(path.join("/tmp", "/temp-" + parseInt(randomNumber, 10)));
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 });

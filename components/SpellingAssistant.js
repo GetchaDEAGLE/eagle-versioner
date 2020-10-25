@@ -274,39 +274,45 @@ class SpellingAssistant {
    * @param {string} extraDictWordsFileName The name of the extra dictionary words file.
    * @param {string} word The word to add to the dictionary.
    * @throws IllegalArgumentException when an invalid argument is passed.
+   * @throws IllegalArgumentException when the specified word contains an invalid character.
    * @throws IOException when the combined directory and extra dictionary words file name contain too many characters.
    * @throws IOException when extra dictionary words file name contains invalid characters.
    */
   addWordToDictionary(extraDictWordsDir, extraDictWordsFileName, word) {
     if (typeof extraDictWordsDir === "string" && extraDictWordsDir && typeof extraDictWordsFileName === "string"
         && extraDictWordsFileName && typeof word === "string" && word) {
-      let fileSystemHelper = new FileSystemHelper();
+      if (SpellingAssistant.dictionaryEntryRegex.test(word)) {
+        let fileSystemHelper = new FileSystemHelper();
 
-      if (fileSystemHelper.getIsValidFileName(extraDictWordsFileName)) {
-        if (fileSystemHelper.getIsValidFilePathAndNameCharLength(extraDictWordsDir, extraDictWordsFileName)) {
-          if (fileSystemHelper.getDoesFileExist(extraDictWordsDir, extraDictWordsFileName)) {
-            let additionalWords = this.getExtraDictionaryWords(extraDictWordsDir, extraDictWordsFileName);
-            let fileContents = "";
+        if (fileSystemHelper.getIsValidFileName(extraDictWordsFileName)) {
+          if (fileSystemHelper.getIsValidFilePathAndNameCharLength(extraDictWordsDir, extraDictWordsFileName)) {
+            if (fileSystemHelper.getDoesFileExist(extraDictWordsDir, extraDictWordsFileName)) {
+              let additionalWords = this.getExtraDictionaryWords(extraDictWordsDir, extraDictWordsFileName);
+              let fileContents = "";
 
-            for (let i = 0; i < additionalWords.length; i++) {
-              fileContents = fileContents.concat(additionalWords[i] + "\n");
+              for (let i = 0; i < additionalWords.length; i++) {
+                fileContents = fileContents.concat(additionalWords[i] + "\n");
+              }
+
+              fileContents = fileContents.concat(word + "\n");
+              fileSystemHelper.writeAsString(extraDictWordsDir, extraDictWordsFileName, fileContents);
+            } else {
+              fileSystemHelper.writeAsString(extraDictWordsDir, extraDictWordsFileName, word + "\n");
             }
-
-            fileContents = fileContents.concat(word + "\n");
-            fileSystemHelper.writeAsString(extraDictWordsDir, extraDictWordsFileName, fileContents);
           } else {
-            fileSystemHelper.writeAsString(extraDictWordsDir, extraDictWordsFileName, word + "\n");
+            throw new IOException("The combined directory " + extraDictWordsDir + " and extra dictionary words filename " +
+                extraDictWordsFileName + " contain too many characters.");
           }
         } else {
-          throw new IOException("The combined directory " + extraDictWordsDir + " and extra dictionary words filename " +
-              extraDictWordsFileName + " contain too many characters.");
+          throw new IOException("The specified extra dictionary words filename " + extraDictWordsFileName + " contains " +
+              "invalid characters.");
         }
-      } else {
-        throw new IOException("The specified extra dictionary words filename " + extraDictWordsFileName + " contains " +
-            "invalid characters.");
-      }
 
-      this.spellChecker.personal([word].join("\n"));
+        this.spellChecker.personal([word].join("\n"));
+      } else {
+        throw new IllegalArgumentException("Unable to add the word " + word + " to the dictionary since it contains an " +
+            "invalid character.");
+      }
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the SpellingAssistant addWordToDictionary function.");
     }

@@ -396,12 +396,12 @@ class VersioningAgent {
             versionComponents[0] = String(parseInt(versionComponents[0], 10) + 1);
             versionComponents[1] = "0";
             versionComponents[2] = "0";
-          } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))) {
-            versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
-            versionComponents[2] = "0";
-          } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
+          } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
               || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))
               || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))) {
+            versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
+            versionComponents[2] = "0";
+          } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))) {
             versionComponents[2] = String(parseInt(versionComponents[2], 10) + 1);
           }
         }
@@ -433,22 +433,22 @@ class VersioningAgent {
             versionComponents[0] = String(parseInt(versionComponents[0], 10) + 1);
             versionComponents[1] = "0";
             versionComponents[2] = "0";
-          } else if (currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE)
-              && ((i + 1 <= filteredCommitMsgHistory.length - 1
-                  && filteredCommitMsgHistory[i + 1].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
-                  === false) || i === filteredCommitMsgHistory.length - 1)) {
-            versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
-            versionComponents[2] = "0";
-          } else if ((currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX)
+          } else if ((currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE)
               || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
               || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))
               && ((i + 1 <= filteredCommitMsgHistory.length - 1
+                  && filteredCommitMsgHistory[i + 1].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
+                  === false && filteredCommitMsgHistory[i + 1].includes(
+                      GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
+                  ) === false && filteredCommitMsgHistory[i + 1].includes(
+                      GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)
+                  ) === false) || i === filteredCommitMsgHistory.length - 1)) {
+            versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
+            versionComponents[2] = "0";
+          } else if (currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX)
+              && ((i + 1 <= filteredCommitMsgHistory.length - 1
                   && (filteredCommitMsgHistory[i + 1].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
-                      === false && filteredCommitMsgHistory[i + 1].includes(
-                          GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
-                      ) === false && filteredCommitMsgHistory[i + 1].includes(
-                          GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)
-                      ) === false)) || i === filteredCommitMsgHistory.length - 1)) {
+                      === false)) || i === filteredCommitMsgHistory.length - 1)) {
             versionComponents[2] = String(parseInt(versionComponents[2], 10) + 1);
           }
         }

@@ -221,10 +221,10 @@ class ChangelogCreator {
           ? gitRunner.getVersionCommitSha(lastVersion) : "";
 
       if (lastVersionCommitSha) {
-        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory(lastVersionCommitSha, true),
+        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMessages(lastVersionCommitSha, true),
             currentBranchName, productionBranchName);
       } else {
-        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMsgHistory("", true),
+        changelogAdditions = this.assembleAdditions(gitRunner.getCommitMessages("", true),
             currentBranchName, productionBranchName);
       }
 

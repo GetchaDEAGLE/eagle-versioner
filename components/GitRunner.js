@@ -260,15 +260,15 @@ class GitRunner {
   }
 
   /**
-   * Gets the commit message history for the current branch from oldest to newest.
-   * @param {string} commitSha The commit SHA used as a starting point to get commit history after.
+   * Gets the commit messages for the current branch from oldest to newest.
+   * @param {string} commitSha The commit SHA used as a starting point to get commit messages after.
    * @param {boolean} reverse The option to return the commit messages from newest to oldest.
    * @returns {Array} List of commit messages.
    * @throws IllegalArgumentException when an invalid argument is passed.
-   * @throws ShellCmdFailureException when the Git command to get the commit message history fails.
+   * @throws ShellCmdFailureException when the Git command to get the commit messages fails.
    * @throws InvalidGitDataException when the current branch doesn't contain any commits.
    */
-  getCommitMsgHistory(commitSha = "", reverse = false) {
+  getCommitMessages(commitSha = "", reverse = false) {
     let trimmedCommitMsgHistory = [];
 
     if (typeof commitSha === "string" && typeof reverse === "boolean") {
@@ -322,7 +322,7 @@ class GitRunner {
             " doesn't contain any commits.");
       }
     } else {
-      throw new IllegalArgumentException("Invalid argument passed to the GitRunner getCommitMsgHistory function.");
+      throw new IllegalArgumentException("Invalid argument passed to the GitRunner getCommitMessages function.");
     }
 
     return trimmedCommitMsgHistory;
@@ -599,7 +599,7 @@ class GitRunner {
     let contiguousWipCommitCount = 0;
 
     if (typeof lastProdVersionCommitSha === "string") {
-      let commitMessageHistory = this.getCommitMsgHistory(lastProdVersionCommitSha, true);
+      let commitMessageHistory = this.getCommitMessages(lastProdVersionCommitSha, true);
 
       for (let i = 0; i < commitMessageHistory.length; i++) {
         if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.WIP))) {

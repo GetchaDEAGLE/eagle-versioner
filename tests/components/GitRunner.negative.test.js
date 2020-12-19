@@ -55,7 +55,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
 
   test("Tests getting the commit message history with an invalid argument.", () => {
     expect(() => {
-      new GitRunner(Logger.OutputType.CONSOLE).getCommitMsgHistory(10, 20);
+      new GitRunner(Logger.OutputType.CONSOLE).getCommitMessages(10, 20);
     }).toThrow(IllegalArgumentException);
   });
 
@@ -66,7 +66,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
     shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
 
     expect(() => {
-      new GitRunner(Logger.OutputType.CONSOLE).getCommitMsgHistory();
+      new GitRunner(Logger.OutputType.CONSOLE).getCommitMessages();
     }).toThrow(ShellCmdFailureException);
 
     shell.cd("..");

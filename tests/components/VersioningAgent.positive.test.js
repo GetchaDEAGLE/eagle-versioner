@@ -53,7 +53,7 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
     let initialDevVerChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
-    let commitMessageHistory = gitRunner.getCommitMsgHistory("", true);
+    let commitMessageHistory = gitRunner.getCommitMessages("", true);
 
     // The expected version doesn't include the branch name since that is done in the VersioningAgent's determine method.
     // In addition, the branch containing the commits used for this test only has two initial development versions

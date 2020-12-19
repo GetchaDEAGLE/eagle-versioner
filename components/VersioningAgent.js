@@ -524,7 +524,7 @@ class VersioningAgent {
       currentBranchName = gitRunner.getCurrentBranchName();
       let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
       lastProdVersion = (lastProdVersionMap.size > 0) ? lastProdVersionMap.get(lastProdVersionCommitSha) : "";
-      let commitMessageHistory = gitRunner.getCommitMsgHistory(lastProdVersionCommitSha);
+      let commitMessageHistory = gitRunner.getCommitMessages(lastProdVersionCommitSha);
 
       if (this.containsVersionableCommits(commitMessageHistory)) {
         if (lastProdVersion) {
@@ -534,7 +534,7 @@ class VersioningAgent {
         } else {
           let initialDevVersionChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
           commitMessageHistory = (initialDevVersionChangeCommitShas.length > 0)
-              ? gitRunner.getCommitMsgHistory(initialDevVersionChangeCommitShas[0]) : [];
+              ? gitRunner.getCommitMessages(initialDevVersionChangeCommitShas[0]) : [];
           determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas[0], commitMessageHistory);
         }
       } else if (lastProdVersion) {

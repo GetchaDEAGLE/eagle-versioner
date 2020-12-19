@@ -42,7 +42,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
     testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
     shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
-    let commitMsgHistory = new GitRunner(Logger.OutputType.SHELL).getCommitMsgHistory();
+    let commitMsgHistory = new GitRunner(Logger.OutputType.SHELL).getCommitMessages();
     expect(commitMsgHistory.length).toBe(42);
     expect(commitMsgHistory[0]).toBe("test");
     shell.cd("..");
@@ -57,7 +57,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
     let gitRunner = new GitRunner(Logger.OutputType.SHELL);
     shell.exec("git checkout latest", { silent: false });
     let versionCommitSha = gitRunner.getVersionCommitSha("2.3.7");
-    let commitMsgHistory = gitRunner.getCommitMsgHistory(versionCommitSha);
+    let commitMsgHistory = gitRunner.getCommitMessages(versionCommitSha);
     expect(commitMsgHistory.length).toBe(6);
     shell.cd("..");
     fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
@@ -97,7 +97,7 @@ describe("Tests the GitRunner for proper functionality.", () => {
       gitRunner.retryFailedCommit();
     }
 
-    expect(gitRunner.getCommitMsgHistory().pop()).toBe("[FEATURE] Added new feature\n" +
+    expect(gitRunner.getCommitMessages().pop()).toBe("[FEATURE] Added new feature\n" +
         "\n" +
         "It's really cool.");
     shell.cd("..");

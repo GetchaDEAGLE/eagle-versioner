@@ -86,19 +86,23 @@ class ChangelogCreator {
       let commitMessagesSinceLastVersion = [];
       let initialCommitVersion = "";
 
-      for (let i = 0; i < commitMessageHistory.length; i++) {
-        if (commitMessageHistory[i].indexOf(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE)) >= 0) {
-          let foundVersion = versioningAgent.extractVersion(commitMessageHistory[i]);
-          initialCommitVersion = (commitMessageHistory[i].includes(GitRunner.initialCommitTag))
+      // generate list of commits that contain version change and versionable commits
+      let filteredCommitMessageHistory = versioningAgent.filterCommitMessages(commitMessageHistory);
+
+      // search for and record important information needed later when assembling the additions
+      for (let i = 0; i < filteredCommitMessageHistory.length; i++) {
+        if (filteredCommitMessageHistory[i].indexOf(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE))
+            >= 0) {
+          let foundVersion = versioningAgent.extractVersion(filteredCommitMessageHistory[i]);
+          initialCommitVersion = (filteredCommitMessageHistory[i].includes(GitRunner.initialCommitTag))
               ? foundVersion.valueOf() : "";
           lastFoundProductionVersion = (VersioningAgent.prodVersionRegex.test(foundVersion))
               ? foundVersion : lastFoundProductionVersion;
 
-          if (commitMessagesSinceLastVersion.length === 0) {
-            if ((currentBranchName === productionBranchName && foundVersion === lastFoundProductionVersion)
-                || currentBranchName !== productionBranchName) {
-              commitMessagesSinceLastVersion = Array.from(commitMessageHistory).splice(0, i);
-            }
+          if (commitMessagesSinceLastVersion.length === 0
+              && ((currentBranchName === productionBranchName && foundVersion === lastFoundProductionVersion)
+                  || currentBranchName !== productionBranchName)) {
+            commitMessagesSinceLastVersion = Array.from(filteredCommitMessageHistory).splice(0, i);
           }
 
           if (foundVersion && ((currentBranchName === productionBranchName && foundVersion !== lastFoundProductionVersion)
@@ -109,22 +113,27 @@ class ChangelogCreator {
         }
       }
 
-      for (let i = 0; i < commitMessageHistory.length; i++) {
-        let commitMessageLines = commitMessageHistory[i].split("\n");
+      // assemble the additions
+      for (let i = 0; i < filteredCommitMessageHistory.length; i++) {
+        let commitMessageLines = filteredCommitMessageHistory[i].split("\n");
 
-        if (commitMessageHistory[i].indexOf(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE)) >= 0) {
-          let currentVersion = versioningAgent.extractVersion(commitMessageHistory[i]);
+        if (filteredCommitMessageHistory[i].indexOf(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE))
+            >= 0) {
+          let currentVersion = versioningAgent.extractVersion(filteredCommitMessageHistory[i]);
 
           if (currentVersion) {
-            if (versionsToSkip.indexOf(currentVersion) === -1) {
-                if (changeLogAdditions.length > 0) {
-                  let versionMatches =
-                      changeLogAdditions[changeLogAdditions.length - 1].match(VersioningAgent.anyVersionRegex);
+            if (versionsToSkip.indexOf(currentVersion) === -1 && i < filteredCommitMessageHistory.length - 1
+                && filteredCommitMessageHistory[i + 1].indexOf(
+                    GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE)
+                ) === -1) {
+              if (changeLogAdditions.length > 0) {
+                let versionMatches =
+                    changeLogAdditions[changeLogAdditions.length - 1].match(VersioningAgent.anyVersionRegex);
 
-                  if (Array.isArray(versionMatches) === false) {
-                    changeLogAdditions[changeLogAdditions.length - 1] += "\n";
-                  }
+                if (Array.isArray(versionMatches) === false) {
+                  changeLogAdditions[changeLogAdditions.length - 1] += "\n";
                 }
+              }
 
               changeLogAdditions.push("## " + currentVersion + "\n\n");
 
@@ -136,11 +145,11 @@ class ChangelogCreator {
             throw new InvalidGitDataException("It has been detected that a version change commit does not meet semantic " +
                 "version formatting standards (see https://semver.org for more details). Perhaps it was added manually " +
                 "or changed using Git rebase. Please fix this commit and try again.\n\nAffected Commit Message:\n\n" +
-                commitMessageHistory[i]);
+                filteredCommitMessageHistory[i]);
           }
         } else {
           commitMessagesSinceLastVersion = (commitMessagesSinceLastVersion.length === 0)
-              ? commitMessageHistory : commitMessagesSinceLastVersion;
+              ? filteredCommitMessageHistory : commitMessagesSinceLastVersion;
 
           if ((i === 0 || changeLogAdditions.length === 0) && (commitMessagesSinceLastVersion.length > 0
               && versioningAgent.containsVersionableCommits(commitMessagesSinceLastVersion))) {

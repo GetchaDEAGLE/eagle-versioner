@@ -241,6 +241,25 @@ class GitRunner {
   }
 
   /**
+   * Gets the commit message using the specified commit SHA.
+   * @param {string} commitSha The commit SHA used to get the commit message from.
+   * @returns {String} The commit message.
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  getCommitMessage(commitSha) {
+    let commitMessage = "";
+
+    if (commitSha) {
+      let output = shell.exec("git log --format=%B -n 1 " + commitSha, { silent: true });
+      commitMessage = (output.stdout) ? output.stdout.trim() : "";
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the GitRunner getCommitMessage function.");
+    }
+
+    return commitMessage;
+  }
+
+  /**
    * Gets the commit message history for the current branch from oldest to newest.
    * @param {string} commitSha The commit SHA used as a starting point to get commit history after.
    * @param {boolean} reverse The option to return the commit messages from newest to oldest.

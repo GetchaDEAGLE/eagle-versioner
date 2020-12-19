@@ -352,7 +352,7 @@ class VersioningAgent {
           "function.");
     }
 
-    return (minorVersion > 0) ? "0." + parseInt(minorVersion, 10) + ".0" : VersioningAgent.startingInitialDevVersion;
+    return (minorVersion > 0) ? "0." + minorVersion + ".0" : VersioningAgent.startingInitialDevVersion;
   }
 
   /**

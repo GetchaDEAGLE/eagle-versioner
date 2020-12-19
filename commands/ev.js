@@ -132,7 +132,7 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
               isInitialCommit: options.isInitialCommit,
               insertSkipCiTag: options.insertSkipCiTag,
               manual: options.manual,
-              squashWipCommits: options.squashWipCommits,
+              squashWipCommits: options.squashWip,
               changeType: colors.unstyle(options.changeType),
               newVersion: colors.unstyle(options.newVersion),
               prodBranch: colors.unstyle(options.prodBranch),
@@ -146,38 +146,40 @@ const InvalidCliCmdParamsException = require("../exceptions/InvalidCliCmdParamsE
 
             if (appliedOptions.manual) {
               if (appliedOptions.changeType) {
-                if (appliedOptions.squashWipCommits
-                    && GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.WIP
-                    && GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.VERSION_CHANGE) {
-                  Logger.publish({
-                    loggingLevelTarget: Logger.Level.VERBOSE,
-                    message: "Skipped squashing WIP commits since it isn't supported for the " +
-                        appliedOptions.changeType.toLowerCase() + " change type.",
-                    isLabelIncluded: true,
-                    outputType: Logger.OutputType.SHELL
-                  });
-                } else {
-                  Logger.publish({
-                    loggingLevelTarget: Logger.Level.WARNING,
-                    message: "Squashing WIP commits should only occur in a feature branch, ideally from a forked " +
-                        "repository - otherwise errors could occur.",
-                    isLabelIncluded: true,
-                    outputType: Logger.OutputType.SHELL
-                  });
-
-                  let lastProdVersionMap = gitRunner.getLastProdVersionMap();
-                  let lastProdVersionCommitSha = (lastProdVersionMap.size > 0) ? lastProdVersionMap.keys().next().value : "";
-                  let contigousWipCommitCount = gitRunner.getContiguousWipCommitCount(lastProdVersionCommitSha);
-
-                  if (contigousWipCommitCount > 0) {
-                    gitRunner.removeCommitsAndStage(contigousWipCommitCount);
-                  } else {
+                if (appliedOptions.squashWipCommits) {
+                  if (GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.WIP
+                      && GitRunner.ChangeType.getSymbol(appliedOptions.changeType) === GitRunner.ChangeType.VERSION_CHANGE) {
                     Logger.publish({
-                      loggingLevelTarget: Logger.Level.INFO,
-                      message: "There wasn't any WIP commits to squash.",
-                      isLabelIncluded: false,
+                      loggingLevelTarget: Logger.Level.VERBOSE,
+                      message: "Skipped squashing WIP commits since it isn't supported for the " +
+                          appliedOptions.changeType.toLowerCase() + " change type.",
+                      isLabelIncluded: true,
                       outputType: Logger.OutputType.SHELL
                     });
+                  } else {
+                    Logger.publish({
+                      loggingLevelTarget: Logger.Level.WARNING,
+                      message: "Squashing WIP commits should only occur in a feature branch, ideally from a forked " +
+                          "repository - otherwise errors could occur.",
+                      isLabelIncluded: true,
+                      outputType: Logger.OutputType.SHELL
+                    });
+
+                    let lastProdVersionMap = gitRunner.getLastProdVersionMap();
+                    let lastProdVersionCommitSha = (lastProdVersionMap.size > 0)
+                        ? lastProdVersionMap.keys().next().value : "";
+                    let contigousWipCommitCount = gitRunner.getContiguousWipCommitCount(lastProdVersionCommitSha);
+
+                    if (contigousWipCommitCount > 0) {
+                      gitRunner.removeCommitsAndStage(contigousWipCommitCount);
+                    } else {
+                      Logger.publish({
+                        loggingLevelTarget: Logger.Level.INFO,
+                        message: "There wasn't any WIP commits to squash.",
+                        isLabelIncluded: false,
+                        outputType: Logger.OutputType.SHELL
+                      });
+                    }
                   }
                 }
 

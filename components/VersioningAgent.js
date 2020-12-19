@@ -308,18 +308,45 @@ class VersioningAgent {
   }
 
   /**
+   * Filters out commit messages that aren't versionable but keeps the version change type.
+   * @param {Array} commitMessageHistory The commit messages to filter.
+   * @returns {Array} The filtered commit messages
+   * @throws IllegalArgumentException when an invalid argument is passed.
+   */
+  filterCommitMessages(commitMessageHistory) {
+    let filteredCommitMessages = [];
+
+    if (Array.isArray(commitMessageHistory)) {
+      for (let i = 0; i < commitMessageHistory.length; i++) {
+        if (commitMessageHistory[i].indexOf(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.VERSION_CHANGE)) >= 0
+            || this.containsVersionableCommits([commitMessageHistory[i]])) {
+          filteredCommitMessages.push(commitMessageHistory[i]);
+        }
+      }
+    } else {
+      throw new IllegalArgumentException("Invalid argument passed to the VersioningAgent filterCommitMessages " +
+          "function.");
+    }
+
+    return filteredCommitMessages;
+  }
+
+  /**
    * Calculates the initial development version of the application.
-   * @param {string} initialDevVerChangeCommitShas The commit SHAs containing initial development version change commits.
+   * @param {String} lastInitDevVerChangeSha The last initial dev version change SHA.
    * @param {Array} commitMessageHistory The commit messages since last initial development version update.
    * @returns {string} The calculated initial development version.
    * @throws IllegalArgumentException when an invalid argument is passed.
    */
-  calculateInitialDev(initialDevVerChangeCommitShas, commitMessageHistory) {
+  calculateInitialDev(lastInitDevVerChangeSha, commitMessageHistory) {
     let minorVersion = 0;
 
-    if (Array.isArray(initialDevVerChangeCommitShas) && Array.isArray(commitMessageHistory)) {
-      minorVersion = (initialDevVerChangeCommitShas.length > 0) ? initialDevVerChangeCommitShas.length : 0;
-      minorVersion += (this.containsVersionableCommits(commitMessageHistory)) ? 1 : 0;
+    if (lastInitDevVerChangeSha && Array.isArray(commitMessageHistory)) {
+      let currentMinorVerComponents = this.extractVersionComponents(this.extractVersion(
+          new GitRunner(Logger.OutputType.SHELL).getCommitMessage(lastInitDevVerChangeSha)
+      ));
+      let filteredCommitMessages = this.filterCommitMessages(commitMessageHistory);
+      minorVersion = (filteredCommitMessages) ? parseInt(currentMinorVerComponents[1], 10) + 1 : 0;
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the VersioningAgent calculateInitialDev " +
           "function.");
@@ -508,7 +535,7 @@ class VersioningAgent {
           let initialDevVersionChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
           commitMessageHistory = (initialDevVersionChangeCommitShas.length > 0)
               ? gitRunner.getCommitMsgHistory(initialDevVersionChangeCommitShas[0]) : [];
-          determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas, commitMessageHistory);
+          determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas[0], commitMessageHistory);
         }
       } else if (lastProdVersion) {
         determinedVersion = lastProdVersion;

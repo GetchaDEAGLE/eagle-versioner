@@ -16,9 +16,9 @@ const STARTING_PROD_VERSION = "1.0.0";
 const INITIAL_DEV_VERSION_REGEX = new RegExp(/^[0][.][1-9]\d*[.][0][-]\w+$/);
 const DEV_VERSION_REGEX = new RegExp(/^[1-9]\d*[.]([0]|[1-9]+|([1-9]\d+))[.]([0]|[1-9]+|([1-9]\d+))[-]\w+$/);
 const PROD_VERSION_REGEX = new RegExp(/^([1-9]\d*[.]([0]|[1-9]+|([1-9]\d+))[.]([0]|[1-9]+|([1-9]\d+)))$/);
-const ANY_VERSION_REGEX = new RegExp(/^([0][.][1-9]\d*[.][0][-]\w+)|/.source +
-    /([1-9]\d*[.]([0]|[1-9]+|([1-9]\d+))[.]([0]|[1-9]+|([1-9]\d+))[-]\w+)|/.source +
-    /([1-9]\d*[.]([0]|[1-9]+|([1-9]\d+))[.]([0]|[1-9]+|([1-9]\d+)))$/.source);
+const ANY_VERSION_REGEX = new RegExp("^(([0][.][1-9]\\d*[.][0][-]\\w+)|" +
+    "([1-9]\\d*[.]([0]|[1-9]+|([1-9]\\d+))[.]([0]|[1-9]+|([1-9]\\d+))[-]\\w+)|" +
+    "([1-9]\\d*[.]([0]|[1-9]+|([1-9]\\d+))[.]([0]|[1-9]+|([1-9]\\d+))))$");
 
 /**
  * Provides functionality for calculating the version.

@@ -1,7 +1,7 @@
-FROM node:10.22.0-alpine3.11
+FROM node:14.15.3-alpine3.12
 LABEL maintainer = "Daniel Eagle"
 
-ARG evVersion=1.3.4
+ARG evVersion=1.7.0
 ENV gitUser=EV
 ENV gitEmail=eagle@versioner
 

@@ -341,12 +341,21 @@ class VersioningAgent {
   calculateInitialDev(lastInitDevVerChangeSha, commitMessageHistory) {
     let minorVersion = 0;
 
-    if (lastInitDevVerChangeSha && Array.isArray(commitMessageHistory)) {
-      let currentMinorVerComponents = this.extractVersionComponents(this.extractVersion(
-          new GitRunner(Logger.OutputType.SHELL).getCommitMessage(lastInitDevVerChangeSha)
-      ));
-      let filteredCommitMessages = this.filterCommitMessages(commitMessageHistory);
-      minorVersion = (filteredCommitMessages) ? parseInt(currentMinorVerComponents[1], 10) + 1 : 0;
+    if (typeof lastInitDevVerChangeSha === "string" && Array.isArray(commitMessageHistory)) {
+      if (lastInitDevVerChangeSha) {
+        let currentMinorVerComponents = this.extractVersionComponents(this.extractVersion(
+            new GitRunner(Logger.OutputType.SHELL).getCommitMessage(lastInitDevVerChangeSha)
+        ));
+        let filteredCommitMessages = this.filterCommitMessages(commitMessageHistory);
+
+        if (filteredCommitMessages.length > 0) {
+          minorVersion = parseInt(currentMinorVerComponents[1], 10) + 1;
+        } else {
+          minorVersion = parseInt(currentMinorVerComponents[1], 10);
+        }
+      } else {
+        minorVersion = 1;
+      }
     } else {
       throw new IllegalArgumentException("Invalid argument passed to the VersioningAgent calculateInitialDev " +
           "function.");
@@ -534,8 +543,10 @@ class VersioningAgent {
         } else {
           let initialDevVersionChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
           commitMessageHistory = (initialDevVersionChangeCommitShas.length > 0)
-              ? gitRunner.getCommitMessages(initialDevVersionChangeCommitShas[0]) : [];
-          determinedVersion = this.calculateInitialDev(initialDevVersionChangeCommitShas[0], commitMessageHistory);
+              ? gitRunner.getCommitMessages(initialDevVersionChangeCommitShas[0]) : gitRunner.getCommitMessages();
+          let lastInitialDevVersionChangeCommitSha =
+              (initialDevVersionChangeCommitShas.length > 0) ? initialDevVersionChangeCommitShas[0] : "";
+          determinedVersion = this.calculateInitialDev(lastInitialDevVersionChangeCommitSha, commitMessageHistory);
         }
       } else if (lastProdVersion) {
         determinedVersion = lastProdVersion;

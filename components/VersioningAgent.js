@@ -363,7 +363,7 @@ class VersioningAgent {
           "function.");
     }
 
-    return (minorVersion > 0) ? "0." + minorVersion + ".0" : VersioningAgent.startingInitialDevVersion;
+    return "0." + minorVersion + ".0";
   }
 
   /**

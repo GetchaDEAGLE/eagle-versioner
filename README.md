@@ -67,6 +67,12 @@ in the terminal.
 npm install -g eagle-versioner
 ```
 
+To update an existing installation to the latest version, run the command below.
+
+```bash
+npm update -g eagle-versioner
+```
+
 ## Main Features
 
 There are three main features which make up the tool, all provided by a simple CLI.
@@ -89,11 +95,13 @@ check spelling (interactive mode only) and persist words added to the dictionary
 * **Bug Fix (causes patch version change)** - It's fun squashing bugs.
 * **Changelog** - Updating the changelog for project visibility.
 * **Chore** - Generic chore that doesn't fall in another change type.
-* **Dependency (causes patch version change)** - Bumping dependencies or adding new ones.
+* **Dependency (causes minor version change)** - Bumping dependencies or adding new ones.
+* **Deprecate (causes minor version change)** - Getting ready to retire something.
 * **Doc** - Documentation to keep stakeholders happy.
 * **Feature (causes minor version change)** - Something new and shiny was added.
-* **Perf (causes patch version change)** - The application is performing way better now.
+* **Perf (causes minor version change)** - The application is performing way better now.
 * **Refactor** - For refactoring code but not adding new functionality.
+* **Remove (causes minor version change)** - Out with the old.
 * **Styling** - Fixing ugly code (spaces are better than tabs).
 * **Test** - The addition of tests (e.g. unit tests, integration tests, etc.).
 * **Version Change** - Updates to the file(s) containing version information.

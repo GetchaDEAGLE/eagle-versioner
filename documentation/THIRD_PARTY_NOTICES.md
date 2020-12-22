@@ -9,21 +9,21 @@ reserves all rights not expressly granted herein, whether by implication, estopp
 
 1. benmosher/eslint-plugin-import version 2.22.1 (https://github.com/benmosher/eslint-plugin-import)
 2. chalk/ansi-regex version 5.0.0 (https://github.com/chalk/ansi-regex)
-3. cthackers/adm-zip version 0.4.16 (https://github.com/cthackers/adm-zip)
+3. cthackers/adm-zip version 0.5.1 (https://github.com/cthackers/adm-zip)
 4. doowb/ansi-colors version 4.1.1 (https://github.com/doowb/ansi-colors)
-5. eslint/eslint version 7.10.0 (https://github.com/eslint/eslint)
-6. eslint-config-airbnb-base (part of airbnb/javascript) version 14.2.0 (https://www.npmjs.com/package/eslint-config-airbnb-base,
+5. eslint/eslint version 7.16.0 (https://github.com/eslint/eslint)
+6. eslint-config-airbnb-base (part of airbnb/javascript) version 14.2.1 (https://www.npmjs.com/package/eslint-config-airbnb-base,
 https://github.com/airbnb/javascript)
-7. facebook/jest version 26.5.2 (https://github.com/facebook/jest)
+7. facebook/jest version 26.6.3 (https://github.com/facebook/jest)
 8. isaacs/color-support version 1.1.3 (https://github.com/isaacs/color-support)
 9. jprichardson/node-fs-extra version 9.0.1 (https://github.com/jprichardson/node-fs-extra)
 10. moment/moment version 2.29.1 (https://github.com/moment/moment)
-11. pahen/madge version 3.11.0 (https://github.com/pahen/madge)
+11. pahen/madge version 3.12.0 (https://github.com/pahen/madge)
 12. SBoudrias/Inquirer.js version 7.3.3 (https://github.com/SBoudrias/Inquirer.js)
 13. shelljs/shelljs version 0.8.4 (https://github.com/shelljs/shelljs)
-14. tj/commander.js version 6.1.0 (https://github.com/tj/commander.js)
+14. tj/commander.js version 6.2.1 (https://github.com/tj/commander.js)
 15. wooorm/dictionary-en (part of wooorm/dictionaries) version 3.0.1 (https://github.com/wooorm/dictionaries)
-16. wooorm/nspell version 2.1.2 (https://github.com/wooorm/nspell)
+16. wooorm/nspell version 2.1.4 (https://github.com/wooorm/nspell)
 
 ---
 

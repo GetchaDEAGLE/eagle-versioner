@@ -108,7 +108,7 @@ describe("Tests the OptionsManager for proper functionality.", () => {
     expect(() => {
       new OptionsManager()
           .validateProposedVersion({ strategy: "sequential", devAppendage: "snapshot", newVersion: "1.1.1.1" });
-    }).toThrow(IllegalArgumentException);
+    }).toThrow(VersionFormattingException);
 
     expect(() => {
       new OptionsManager()

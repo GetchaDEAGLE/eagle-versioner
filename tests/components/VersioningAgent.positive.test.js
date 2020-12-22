@@ -6,11 +6,17 @@ const shell = require("shelljs");
 const Logger = require("../../components/Logger");
 const GitRunner = require("../../components/GitRunner");
 const VersioningAgent = require("../../components/VersioningAgent");
+const Enum = require("../../data-structures/Enum");
 
 describe("Tests the VersioningAgent for proper functionality.", () => {
   let versioningAgent = new VersioningAgent();
   let gitRunner = new GitRunner(Logger.OutputType.CONSOLE);
   let testRepoZip = new AdmZip(path.join(__dirname, "/assets/test-repo.zip"));
+
+  test("Tests getting the semVerComponent.",
+      () => {
+        expect(VersioningAgent.SemVerComponent instanceof Enum).toBe(true);
+      });
 
   test("Tests extracting the version from a version change commit message with a commit containing the [ci-skip] tag.",
       () => {
@@ -53,13 +59,41 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout latest", { silent: false });
     let initialDevVerChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
-    let commitMessageHistory = gitRunner.getCommitMessages("", true);
+    let commitMessageHistory = gitRunner.getCommitMessages(initialDevVerChangeCommitShas[0], true);
 
     // The expected version doesn't include the branch name since that is done in the VersioningAgent's determine method.
     // In addition, the branch containing the commits used for this test only has two initial development versions
     // recorded. The other version types are ignored by design which means the correct answer is given here regardless of
     // whether it contains non-initial development version change commits.
-    expect(new VersioningAgent().calculateInitialDev(initialDevVerChangeCommitShas, commitMessageHistory)).toBe("0.3.0");
+    expect(new VersioningAgent().calculateInitialDev(initialDevVerChangeCommitShas[0], commitMessageHistory)).toBe("0.3.0");
+
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
+
+    randomNumber = Math.floor((Math.random() * 10000) + 1);
+    shell.mkdir("-p", path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.exec("git init", { silent: false });
+    shell.exec("touch 01.txt && git add 01.txt", { silent: false });
+    gitRunner.createCommit(GitRunner.ChangeType.DEPRECATE, "Deprecated X", "",
+        false, false, false);
+    commitMessageHistory = gitRunner.getCommitMessages("", true);
+    expect(new VersioningAgent().determine(gitRunner.getLastProdVersionMap(),
+        VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.SNAPSHOT)).toBe("0.1.0-SNAPSHOT");
+
+    shell.exec("touch 02.txt && git add 02.txt", { silent: false });
+    gitRunner.createCommit(GitRunner.ChangeType.VERSION_CHANGE, "0.1.0-latest", "",
+        false, false, false);
+    initialDevVerChangeCommitShas = gitRunner.getInitialDevVerChangeCommitShas();
+    commitMessageHistory = gitRunner.getCommitMessages(initialDevVerChangeCommitShas[0], true);
+    expect(new VersioningAgent().calculateInitialDev(initialDevVerChangeCommitShas[0], commitMessageHistory)).toBe("0.1.0");
+
+    shell.exec("touch 03.txt && git add 03.txt", { silent: false });
+    gitRunner.createCommit(GitRunner.ChangeType.REFACTOR, "Refactored X", "",
+        false, false, false);
+    commitMessageHistory = gitRunner.getCommitMessages(initialDevVerChangeCommitShas[0], true);
+    expect(new VersioningAgent().calculateInitialDev(gitRunner.getInitialDevVerChangeCommitShas()[0], commitMessageHistory))
+        .toBe("0.1.0");
 
     shell.cd("..");
     fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
@@ -96,10 +130,14 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
         { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.COLLECTIVE, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
-    expect(calculatedVersion).toBe("4.0.1-latest");
+    expect(calculatedVersion).toBe("4.1.0-latest");
+    shell.exec("touch test36.txt", { silent: false });
+    shell.exec("git add .", { silent: false });
+    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF) + " increased performance\"",
+        { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
-    expect(calculatedVersion).toBe("4.0.3-latest");
+    expect(calculatedVersion).toBe("4.2.0-latest");
     shell.cd("..");
     fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
@@ -107,8 +145,34 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
   test("Tests the calculation of the version in the production branch using the sequential and collective strategies.",
       () => {
     let randomNumber = Math.floor((Math.random() * 10000) + 1);
-        testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
-        shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.mkdir("-p", path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.exec("git init && git checkout -b master", { silent: false });
+    shell.exec("touch 01.txt && git add 01.txt", { silent: false });
+    gitRunner.createCommit(GitRunner.ChangeType.REMOVE, "Removed X", "",
+        false, false, false);
+    expect(new VersioningAgent().determine(gitRunner.getLastProdVersionMap(),
+        VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.SNAPSHOT)).toBe("1.0.0");
+
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
+
+    randomNumber = Math.floor((Math.random() * 10000) + 1);
+    shell.mkdir("-p", path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
+    shell.exec("git init && git checkout -b master", { silent: false });
+    shell.exec("touch 02.txt && git add 02.txt", { silent: false });
+    gitRunner.createCommit(GitRunner.ChangeType.VERSION_CHANGE, "1.0.0-latest", "",
+        false, true, false);
+    expect(new VersioningAgent().determine(gitRunner.getLastProdVersionMap(),
+        VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME)).toBe("1.0.0");
+
+    shell.cd("..");
+    fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
+
+    randomNumber = Math.floor((Math.random() * 10000) + 1);
+    testRepoZip.extractAllTo(path.join("/tmp", "/temp-" + randomNumber.toString()), false);
+    shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.exec("git checkout master", { silent: false });
     let calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
@@ -117,37 +181,41 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     shell.exec("git add .", { silent: false });
     shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX) + " fixed a bug\"",
         { silent: false });
-    shell.exec("touch test34.txt", { silent: false });
+    shell.exec("touch test35.txt", { silent: false });
     shell.exec("git add .", { silent: false });
     shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX) + " fixed a bug\"",
         { silent: false });
-    shell.exec("touch test35.txt", { silent: false });
+    shell.exec("touch test36.txt", { silent: false });
     shell.exec("git add .", { silent: false });
-    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF) + " increased performance\"",
+    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE) + " deprecated feature\"",
         { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.COLLECTIVE, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
-    expect(calculatedVersion).toBe("3.0.2");
+    expect(calculatedVersion).toBe("3.1.0");
+    shell.exec("touch test37.txt", { silent: false });
+    shell.exec("git add .", { silent: false });
+    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX) + " fixed a bug\"",
+        { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
-    expect(calculatedVersion).toBe("3.0.3");
-    shell.exec("touch test36.txt", { silent: false });
+    expect(calculatedVersion).toBe("3.1.1");
+    shell.exec("touch test38.txt", { silent: false });
     shell.exec("git add .", { silent: false });
     shell.exec("git commit -m \"" + GitRunner.breakingChangeTag + " " +
         GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF) + " increased performance\"", { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.COLLECTIVE, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
     expect(calculatedVersion).toBe("4.0.0");
-    shell.exec("touch test37.txt", { silent: false });
+    shell.exec("touch test39.txt", { silent: false });
     shell.exec("git add .", { silent: false });
     shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE) + " added new feature\"",
         { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.SEQUENTIAL, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);
     expect(calculatedVersion).toBe("4.1.0");
-    shell.exec("touch test38.txt", { silent: false });
+    shell.exec("touch test40.txt", { silent: false });
     shell.exec("git add .", { silent: false });
-    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE) + " added new feature\"",
+    shell.exec("git commit -m \"" + GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.REMOVE) + " removed a feature\"",
         { silent: false });
     calculatedVersion = versioningAgent.determine(gitRunner.getLastProdVersionMap(),
         VersioningAgent.StrategyType.COLLECTIVE, VersioningAgent.DevVersionAppendageType.BRANCH_NAME);

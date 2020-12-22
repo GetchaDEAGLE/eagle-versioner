@@ -53,7 +53,13 @@ describe("Tests the GitRunner for proper functionality.", () => {
     fileSystem.removeSync(path.join("/tmp", "/temp-" + randomNumber.toString()));
   });
 
-  test("Tests getting the commit message history with an invalid argument.", () => {
+  test("Tests getting a commit message with an invalid argument.", () => {
+    expect(() => {
+      new GitRunner(Logger.OutputType.CONSOLE).getCommitMessage(101);
+    }).toThrow(IllegalArgumentException);
+  });
+
+  test("Tests getting the commit messages with an invalid argument.", () => {
     expect(() => {
       new GitRunner(Logger.OutputType.CONSOLE).getCommitMessages(10, 20);
     }).toThrow(IllegalArgumentException);

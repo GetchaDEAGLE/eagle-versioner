@@ -249,7 +249,7 @@ class GitRunner {
   getCommitMessage(commitSha) {
     let commitMessage = "";
 
-    if (commitSha) {
+    if (typeof commitSha === "string") {
       let output = shell.exec("git log --format=%B -n 1 " + commitSha, { silent: true });
       commitMessage = (output.stdout) ? output.stdout.trim() : "";
     } else {

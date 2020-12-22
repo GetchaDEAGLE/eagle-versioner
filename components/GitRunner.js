@@ -16,8 +16,8 @@ const DEFAULT_PRODUCTION_BRANCH_NAME = "master";
 const COMMIT_MSG_END_TAG = "[msg-end]"; // tag inserted at end of commit messages so they can be easily split into a list
 const CI_SKIP_TAG = "[ci-skip]"; // indicates commit shouldn't trigger CICD pipeline if contained in commit message
 const MINIMUM_REQ_GIT_VER = "2.22.0";
-const CHANGE_TYPE = new Enum("BUG_FIX", "CHANGELOG", "CHORE", "DEPENDENCY", "DOC", "FEATURE", "PERF", "REFACTOR",
-    "STYLING", "TEST", "VERSION_CHANGE", "WIP");
+const CHANGE_TYPE = new Enum("BUG_FIX", "CHANGELOG", "CHORE", "DEPENDENCY", "DEPRECATE", "DOC", "FEATURE", "PERF",
+    "REFACTOR", "STYLING", "TEST", "VERSION_CHANGE", "WIP");
 const BREAKING_CHANGE_TAG = "[BREAKING]";
 const INITIAL_COMMIT_TAG = "[INITIAL_COMMIT]";
 const MAX_SHORT_COMMIT_MSG_CHAR_LENGTH = 60;

@@ -296,6 +296,7 @@ class VersioningAgent {
                   || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
                   || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX))
                   || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))
+                  || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE))
                   || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)));
         }
       }
@@ -407,6 +408,7 @@ class VersioningAgent {
             versionComponents[2] = "0";
           } else if (commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
               || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))
+              || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE))
               || commitMessageHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))) {
             versionComponents[1] = String(parseInt(versionComponents[1], 10) + 1);
             versionComponents[2] = "0";
@@ -434,6 +436,8 @@ class VersioningAgent {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.BUG_FIX);
           } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY))) {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY);
+          } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE))) {
+            currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE);
           } else if (filteredCommitMsgHistory[i].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))) {
             currentChangeTag = GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF);
           }
@@ -444,11 +448,14 @@ class VersioningAgent {
             versionComponents[2] = "0";
           } else if ((currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE)
               || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
+              || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE)
               || currentChangeTag === GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF))
               && ((i + 1 <= filteredCommitMsgHistory.length - 1
                   && filteredCommitMsgHistory[i + 1].includes(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE))
                   === false && filteredCommitMsgHistory[i + 1].includes(
                       GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY)
+                  ) === false && filteredCommitMsgHistory[i + 1].includes(
+                      GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE)
                   ) === false && filteredCommitMsgHistory[i + 1].includes(
                       GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.PERF)
                   ) === false) || i === filteredCommitMsgHistory.length - 1)) {

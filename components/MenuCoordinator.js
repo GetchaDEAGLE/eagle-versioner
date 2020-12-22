@@ -33,6 +33,8 @@ const COMMIT_TYPE_QUESTION = {
     "               Changes the build process, updates the config on complementary tool, etc.",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPENDENCY) + ":") +
     "          Updates necessary dependencies",
+    colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DEPRECATE) + ":") +
+    "           Marks something as deprecated",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.DOC) + ":") +
     "                 Changes the documentation",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.FEATURE) + ":") +
@@ -777,6 +779,10 @@ class MenuCoordinator {
       } else if (commitTypeResult.commitType
           && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.DEPENDENCY))) {
         gitRunner.createCommit(GitRunner.ChangeType.DEPENDENCY, shortCommitMessage, longCommitMessage, isBreakingChange,
+            isInitialCommit, isCiSkipTagInserted);
+      } else if (commitTypeResult.commitType
+          && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.DEPRECATE))) {
+        gitRunner.createCommit(GitRunner.ChangeType.DEPRECATE, shortCommitMessage, longCommitMessage, isBreakingChange,
             isInitialCommit, isCiSkipTagInserted);
       } else if (commitTypeResult.commitType
           && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.DOC))) {

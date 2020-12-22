@@ -1,6 +1,6 @@
 {
   "name": "eagle-versioner",
-  "version": "1.3.4",
+  "version": "1.7.2",
   "description": "From the creation of special commits, calculates the semantic version based on the Git branch and commit history.",
   "engines": {
     "npm": ">=3",

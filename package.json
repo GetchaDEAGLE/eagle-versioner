@@ -49,7 +49,10 @@
     "version",
     "wip",
     "commit",
-    "calculate"
+    "calculate",
+    "cicd",
+    "devops",
+    "automatic"
   ],
   "author": "Daniel Eagle",
   "license": "MIT"

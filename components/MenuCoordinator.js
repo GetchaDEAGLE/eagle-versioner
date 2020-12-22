@@ -43,6 +43,8 @@ const COMMIT_TYPE_QUESTION = {
     "                Improves performance",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.REFACTOR) + ":") +
     "            Cleans up the code but doesn't fix a bug or add a feature",
+    colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.REMOVE) + ":") +
+    "              Removes a piece of functionality that is no longer needed",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.STYLING) + ":") +
     "             Changes the white space, new lines, formatting, etc. that doesn't affect code significance",
     colors.yellow(GitRunner.getChangeTypeAsTag(GitRunner.ChangeType.TEST) + ":") +
@@ -799,6 +801,10 @@ class MenuCoordinator {
       } else if (commitTypeResult.commitType
           && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.REFACTOR))) {
         gitRunner.createCommit(GitRunner.ChangeType.REFACTOR, shortCommitMessage, longCommitMessage, isBreakingChange,
+            isInitialCommit, isCiSkipTagInserted);
+      } else if (commitTypeResult.commitType
+          && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.REMOVE))) {
+        gitRunner.createCommit(GitRunner.ChangeType.REMOVE, shortCommitMessage, longCommitMessage, isBreakingChange,
             isInitialCommit, isCiSkipTagInserted);
       } else if (commitTypeResult.commitType
           && commitTypeResult.commitType.includes(GitRunner.ChangeType.getName(GitRunner.ChangeType.STYLING))) {

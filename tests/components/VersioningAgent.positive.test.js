@@ -73,7 +73,7 @@ describe("Tests the VersioningAgent for proper functionality.", () => {
     randomNumber = Math.floor((Math.random() * 10000) + 1);
     shell.mkdir("-p", path.join("/tmp", "/temp-" + randomNumber.toString()));
     shell.cd(path.join("/tmp", "/temp-" + randomNumber.toString()));
-    shell.exec("git init", { silent: false });
+    shell.exec("git init && git checkout -b latest", { silent: false });
     shell.exec("touch 01.txt && git add 01.txt", { silent: false });
     gitRunner.createCommit(GitRunner.ChangeType.DEPRECATE, "Deprecated X", "",
         false, false, false);
